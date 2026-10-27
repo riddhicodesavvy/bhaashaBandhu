@@ -1,0 +1,6 @@
+project_id = "sdgdmplwvtplvtcndusy"
+
+[functions.bb-data]
+# The gateway verifies Firebase RS256 signature, issuer and audience itself.
+# Supabase Auth JWT validation would reject these external Firebase tokens.
+verify_jwt = false

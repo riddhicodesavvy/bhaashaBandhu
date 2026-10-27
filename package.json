@@ -1,0 +1,49 @@
+{
+  "name": "bhashabandhu",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch server/index.ts",
+    "build": "tsc --noEmit && vite build",
+    "start": "tsx server/index.ts",
+    "check": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "seed:demo": "tsx scripts/seed-demo.ts",
+    "verify:cloud": "tsx scripts/verify-cloud.ts",
+    "verify:ai": "tsx scripts/verify-ai.ts",
+    "verify:audio": "tsx scripts/verify-audio.ts",
+    "verify:logins": "tsx scripts/verify-logins.ts",
+    "build:functions": "node scripts/build-functions.mjs",
+    "test:live": "tsx scripts/e2e-live.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "firebase": "^12.4.0",
+    "firebase-admin": "^13.5.0",
+    "helmet": "^8.1.0",
+    "lucide-react": "^0.468.0",
+    "multer": "^2.0.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.4",
+    "tsx": "^4.20.6",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.12",
+    "@types/express": "^5.0.3",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^22.18.10",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@types/supertest": "^6.0.3",
+    "@vitejs/plugin-react": "^5.0.4",
+    "esbuild": "^0.28.2",
+    "supertest": "^7.1.4",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.10"
+  }
+}

@@ -1,0 +1,7 @@
+import { z } from 'zod';
+export const localeSchema = z.enum(['en', 'hi', 'bn']);
+export const originalSchema = z.object({ title: z.string().trim().min(2).max(200), instructions: z.string().trim().min(3).max(6000), safetyNotes: z.string().max(3000).default('') });
+export const taskInput = z.object({ assignedTo: z.string().min(1).max(128), original: originalSchema, sourceLanguage: localeSchema, deadline: z.iso.datetime(), location: z.string().trim().min(1).max(300), previewToken: z.string().max(200000).optional() });
+export const previewInput = z.object({ assignedTo: z.string().min(1).max(128), original: originalSchema, sourceLanguage: localeSchema });
+export const incidentInput = z.object({ originalText: z.string().trim().min(5).max(6000), sourceLanguage: localeSchema, category: z.enum(['injury', 'hazard', 'unsafe_condition', 'near_miss', 'other']), urgency: z.enum(['low', 'medium', 'high', 'urgent']), location: z.string().trim().min(2).max(300), requestId: z.uuid() });
+export const wageInput = z.object({ workerId: z.string().min(1).max(128), workDate: z.iso.date(), dailyRate: z.number().min(0).max(100000), daysWorked: z.number().min(0).max(31), overtimeHours: z.number().min(0).max(200), overtimeRate: z.number().min(0).max(100000), deductions: z.number().min(0).max(100000), deductionReason: z.string().max(300), paidAmount: z.number().min(0).max(10000000), source: z.enum(['recorded', 'agreed']) }).refine(v => v.deductions === 0 || v.deductionReason.trim().length > 0, { message: 'Explain deductions', path: ['deductionReason'] });

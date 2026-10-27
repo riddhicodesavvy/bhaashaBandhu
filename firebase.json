@@ -1,0 +1,18 @@
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "predeploy": ["npm run build"],
+    "rewrites": [
+      { "source": "/api/**", "function": { "functionId": "bhashabandhuApi", "region": "us-central1" } },
+      { "source": "**", "destination": "/index.html" }
+    ],
+    "headers": [{ "source": "/assets/**", "headers": [{ "key": "Cache-Control", "value": "public,max-age=31536000,immutable" }] }]
+  },
+  "functions": [{
+    "source": "functions", "codebase": "bhashabandhu",
+    "runtime": "nodejs22",
+    "predeploy": ["npm run build:functions"],
+    "ignore": ["node_modules", ".git", "*.log", ".env.local", ".env.example"]
+  }]
+}
