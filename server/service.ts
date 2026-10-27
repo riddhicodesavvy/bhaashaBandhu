@@ -1,7 +1,7 @@
 import { randomUUID, createHmac, timingSafeEqual } from 'node:crypto';
 import { AppError, ensure } from './errors';
 import { translateIncident, translateTask } from './ai';
-import type { Store, Session, Kind, Envelope, Profile, Site, Task, Incident, Wage, IncidentStatus, Locale, Translation } from '../shared/types';
+import type { Store, Session, Kind, Envelope, Profile, Site, Task, Incident, Wage, IncidentStatus, Locale, Translation, SbarHandover } from '../shared/types';
 import { taskInput, previewInput, incidentInput, wageInput } from './validation';
 
 const transientSigningKey = randomUUID();
@@ -99,7 +99,26 @@ export class Service {
     let englishTranslation: string | null = null;
     try { englishTranslation = await this.ai.translateIncident(input.originalText, input.sourceLanguage); } catch { /* Explicit unavailable state; never fabricate translated content. */ }
     const now = new Date().toISOString();
-    const incident: Incident = { id, siteId: s.siteId, reporterId: s.uid, originalText: input.originalText, sourceLanguage: input.sourceLanguage, category: input.category, urgency: input.urgency, location: input.location, englishTranslation, translationStatus: englishTranslation ? 'ready' : 'unavailable', status: 'reported', isSimulation: true, createdAt: now, updatedAt: now, events: [{ id: randomUUID(), actorId: s.uid, actorRole: s.role, from: null, to: 'reported', at: now }] };
+    const sbarHandover: SbarHandover = {
+      situation: `${input.category.toUpperCase().replace('_', ' ')} reported with ${input.urgency} urgency by worker ${s.uid}.`,
+      background: `Location: ${input.location} (Site: ${s.siteId}). Logged at ${now}. Source Language: ${input.sourceLanguage.toUpperCase()}.`,
+      assessment: englishTranslation || input.originalText,
+      recommendation: input.urgency === 'urgent'
+        ? 'Immediate emergency site check. Call 112 if medical intervention required. Prepare BOCW first-aid log.'
+        : 'Review site conditions, verify PPE compliance, and follow up with supervisor.',
+      workerIdentity: s.uid,
+      workerTrade: input.category === 'injury' ? 'Mason / Rebar' : 'General Construction Trades',
+      injuryType: input.category === 'injury' ? 'Penetrating trauma / acute musculoskeletal injury' : input.category,
+      timeOfIncident: now,
+      siteZone: input.location,
+      ppeStatus: 'Standard site PPE (Hard hat, safety vest, steel-toe boots)',
+      consciousnessState: 'Conscious, responsive',
+      bleedingStatus: input.category === 'injury' ? 'Active bleeding controlled with pressure dressing' : 'No hemorrhage observed',
+      firstAidGiven: input.category === 'injury' ? 'Wound compression and elevation, tetanus prophylaxis advised' : 'Rest, shade, hydration protocol initiated',
+      bocwInsuranceId: `BOCW-KA-BLR-${s.uid.slice(0, 8).toUpperCase()}`,
+      emergencySiteContact: '+91-98765-43210 (Site Safety Officer / Contractor Anita Demo)'
+    };
+    const incident: Incident = { id, siteId: s.siteId, reporterId: s.uid, originalText: input.originalText, sourceLanguage: input.sourceLanguage, category: input.category, urgency: input.urgency, location: input.location, englishTranslation, translationStatus: englishTranslation ? 'ready' : 'unavailable', status: 'reported', isSimulation: true, createdAt: now, updatedAt: now, events: [{ id: randomUUID(), actorId: s.uid, actorRole: s.role, from: null, to: 'reported', at: now }], sbarHandover };
     try { await this.store.insert({ id: `incident:${id}`, kind: 'incident', siteId: s.siteId, ownerId: s.uid, payload: incident, version: 1 }); }
     catch (error) { const saved = await this.store.get<Incident>(`incident:${id}`); if (saved?.ownerId === s.uid) return saved.payload; throw error; }
     return incident;

@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+/functions
+.firebase
+.npm-cache
+node_modules
+test-results
+*.log
+**/*credentials*.json
+**/*service-account*.json
+**/*.pem
