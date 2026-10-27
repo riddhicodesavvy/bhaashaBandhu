@@ -19,7 +19,9 @@
     "verify:audio": "tsx scripts/verify-audio.ts",
     "verify:logins": "tsx scripts/verify-logins.ts",
     "build:functions": "node scripts/build-functions.mjs",
-    "test:live": "tsx scripts/e2e-live.ts"
+    "test:live": "tsx scripts/e2e-live.ts",
+    "evaluate": "tsx scripts/evaluate-scorecard.ts",
+    "test:scorecard": "tsx scripts/evaluate-scorecard.ts"
   },
   "dependencies": {
     "dotenv": "^16.6.1",
