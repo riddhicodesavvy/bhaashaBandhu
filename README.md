@@ -1,120 +1,82 @@
 # BhashaBandhu
 
-Multilingual construction tasks, safety reporting, wage transparency and **simulated** hospital handover.
+**Your Language. Your Safety. Your Voice.**
 
-Current architecture: **Firebase Authentication only → Express API → Supabase PostgreSQL application data**, with server-side Groq and a React/TypeScript frontend. Deploy on **Firebase Hosting**, with the API routed to a first-generation Firebase Function. Supabase Auth, Firebase SQL Connect, Cloud SQL, Vercel, Cloud Run and Analytics are not used.
+BhashaBandhu is a mobile-first multilingual construction-worker safety and communication platform aligned with SDG 8. Migrant workers may struggle to understand assignments, report hazards, or check wage records when they do not share a language with supervisors. BhashaBandhu makes instructions and safety reports accessible in **English, Hindi and Bengali**, while preserving the original text.
 
-## Run
+## Key features
 
-```powershell
+- Translated tasks, original-text disclosure and browser-supported audio playback.
+- Task assignment, acknowledgement, progress and completion tracking.
+- Voice/text incident reporting, editable Groq transcripts and translated reports.
+- Shared incident queues, persistent demo acknowledgements and audit history.
+- Wage overview: rates, worked days, overtime, deductions, estimates and discrepancy flags.
+- Firebase login, persistent sessions and backend-enforced role/site access.
+- Responsive multilingual interfaces and a prominent direct Call 112 action.
+
+## Three roles
+
+| Role | Purpose |
+| --- | --- |
+| Worker | View/listen to tasks, acknowledge/complete work, report incidents and review wages. |
+| Contractor | Assign translated tasks, track task statuses, review incidents and record wages. |
+| Hospital Responder Demo | Review simulated handovers and acknowledge, follow up or close demo reports. |
+
+## Tech stack
+
+- React + TypeScript, Vite and responsive CSS.
+- Firebase Authentication and Firebase Hosting configuration.
+- Supabase PostgreSQL and a Firebase-authenticated Supabase Edge Function data gateway.
+- Groq for server-side translation and speech-to-text.
+- Node.js + Express API; first-generation Firebase Functions deployment wrapper included.
+
+Firebase UID-linked database profiles determine roles. Supabase Auth and email-based authorization are not used.
+
+## Setup and run
+
+Requires Node.js 22 and npm.
+
+```bash
 npm ci
-# The ignored local .env already contains the supplied Firebase web settings.
-# For another checkout: Copy-Item .env.example .env, then populate settings.
+cp .env.example .env
+# Populate your environment configuration.
 npm run dev
 ```
 
-Open `http://localhost:8080/login`.
+On PowerShell, use `Copy-Item .env.example .env` if preferred. Preserve an existing populated `.env` rather than replacing it.
 
-```powershell
+Open **http://localhost:8080/login**.
+
+Configure public `VITE_FIREBASE_*` web app values and server-side `GROQ_API_KEY`, `SUPABASE_URL`, `SUPABASE_GATEWAY_URL` and `SUPABASE_PUBLISHABLE_KEY`. The gateway verifies Firebase tokens and keeps the privileged Supabase key inside the Edge runtime. A service-role key is optional for authorized administrative tooling; never place it in `VITE_*` variables.
+
+For a separate database setup, review/apply `supabase/migrations/202610270001_bhashabandhu.sql`, deploy `supabase/functions/bb-data`, and seed profiles linked to the actual Firebase UIDs. The configured demo project already has these records.
+
+```bash
 npm test
 npm run build
-npm run verify:cloud
-```
-
-## Firebase Authentication
-
-`src/firebase.ts` initializes `initializeApp(firebaseConfig)` and exports `auth = getAuth(app)`. It uses `browserLocalPersistence`, `onIdTokenChanged`, `signInWithEmailAndPassword` and `signOut`. No Analytics initialization or hardcoded password checks exist.
-
-The supplied web app configuration is stored in the ignored local `.env` using:
-
-```dotenv
-VITE_FIREBASE_API_KEY=<supplied-public-web-key>
-VITE_FIREBASE_AUTH_DOMAIN=sdg8-4fca4.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=sdg8-4fca4
-VITE_FIREBASE_STORAGE_BUCKET=sdg8-4fca4.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=716301157311
-VITE_FIREBASE_APP_ID=1:716301157311:web:0257c71d0cfc6bbba0170a
-VITE_DEMO_MODE=true
-```
-
-Enable Firebase Email/Password and manage the three Firebase users/passwords separately. The login demo buttons fill email only:
-
-| Email | Supabase profile role | Destination |
-| --- | --- | --- |
-| worker@bhashabandhu.demo | worker | /worker |
-| contractor@bhashabandhu.demo | contractor | /contractor |
-| hospital@bhashabandhu.demo | hospital_responder | /hospital |
-
-Every API request sends a Firebase ID token. Firebase Admin verifies its signature, issuer, audience and expiry against project `sdg8-4fca4`. **The verified UID's server-read Supabase profile supplies role and construction site on each request.** Emails, client body fields and custom role claims do not authorize access. No automatic profile provisioning or role selection occurs after login. Missing profiles fail closed.
-
-Standard signed-token verification uses public certificates and does not require a private service-account key. Optional `FIREBASE_CHECK_REVOKED=true` additionally checks revocation/disabled-user status and requires authorized Admin credentials. Privileged account lookup for the seed script also requires credentials unless explicit UIDs are supplied. Firebase Functions uses its runtime identity; locally an existing `GOOGLE_APPLICATION_CREDENTIALS` file/ADC may be used. Never expose Admin credentials through `VITE_*`.
-
-## Supabase application data
-
-The configured demo uses the deployed **Firebase-authenticated data gateway**. Set these server environment variables (the publishable key is not privileged):
-
-```dotenv
-SUPABASE_URL=<existing-Supabase-project-URL>
-SUPABASE_GATEWAY_URL=https://sdgdmplwvtplvtcndusy.supabase.co/functions/v1/bb-data
-SUPABASE_PUBLISHABLE_KEY=<project-publishable-key>
-```
-
-Review/apply `supabase/migrations/202610270001_bhashabandhu.sql` to the existing Supabase project's PostgreSQL database. The migration creates application tables: `user_profiles` (unique Firebase UID, email, display name, role, language and timestamps), `construction_sites`, `tasks`, `incidents`, `incident_events`, `wage_entries`. It enables RLS and revokes `anon`/`authenticated` access; the Express backend uses the service role and enforces per-role/per-site/per-worker authorization.
-
-The migration is applied to the existing project, and all three verified Firebase UIDs are linked to seeded profiles. Domain payloads are JSONB alongside indexed relational identities/scopes, version and generated status/role columns. CAS updates prevent lost acknowledgements; a PostgreSQL trigger atomically mirrors append-only incident events into `incident_events`. The deployed `bb-data` Edge Function verifies Firebase RS256 signature/issuer/audience and enforces role/site/owner and mutation rules independently. Its Supabase-managed service key never leaves the Edge runtime. Supabase Auth is unused. Direct server access with an explicitly configured `SUPABASE_SERVICE_ROLE_KEY` remains optional for authorized administrative seeding.
-
-Link the existing Firebase users to data profiles by supplying their actual UIDs from Firebase Console:
-
-```dotenv
-DEMO_WORKER_UID=<worker-Firebase-UID>
-DEMO_CONTRACTOR_UID=<contractor-Firebase-UID>
-DEMO_HOSPITAL_UID=<hospital-Firebase-UID>
-DEMO_MODE=true
-```
-
-```powershell
-# For a separate setup with an explicitly authorized server service key:
-npm run seed:demo
-```
-
-Alternatively omit those UID variables and provide authorized Firebase Admin credentials; the script looks up the **existing** Firebase accounts by exact email. It does not create/reset users, passwords or custom claims. Seeding only creates missing fictional site/profile/wage data in Supabase and preserves existing records.
-
-## Groq
-
-Keep `GROQ_API_KEY`, `GROQ_TEXT_MODEL` and `GROQ_STT_MODEL` server-only. Real translation and transcription proxies are integrated; task previews validate JSON/numeric integrity, and failed incident translations preserve source with an unavailable state. Audio upload limit is 3 MB / 60 seconds. Raw audio is not retained.
-
-```powershell
-npm run verify:ai
-# With a synthetic WAV fixture only:
-npm run verify:audio -- C:\path\synthetic-report.wav
-```
-
-## Firebase Hosting
-
-`firebase.json` publishes `dist`, rewrites `/api/**` to the first-generation `bhashabandhuApi` HTTPS Function and all frontend deep links to `index.html`. `.firebaserc` selects the existing `sdg8-4fca4` project. `VITE_*` values are public and embedded at build time. Database/Groq keys stay in runtime secrets. No second-generation function or Cloud Run service is configured.
-
-Firebase Hosting cannot execute Express or protect server secrets on its own. The included first-generation Functions wrapper supplies that server runtime. Function deployment requires authorized Firebase CLI access and a project eligible for Functions billing; neither is silently enabled by this repository. Configure non-secret runtime values from `functions/.env.example`, install Function dependencies, and bind existing runtime secrets before deployment:
-
-```powershell
-npm --prefix functions install
 npm run build:functions
-npx firebase-tools deploy --project sdg8-4fca4 --only functions:bhashabandhuApi,hosting
 ```
 
-The Functions wrapper binds only `GROQ_API_KEY`; it uses the same authenticated database gateway. The Supabase MCP OAuth credential is for development/database management, not an application credential. No database password is used. Firebase Hosting publication still requires an authorized Firebase CLI deployment identity and runtime secret binding; no hosted frontend URL is claimed.
+Firebase Hosting SPA/API rewrites are in `firebase.json`; `.firebaserc` selects the existing project. Publishing requires an authorized Firebase deployment identity and configured Function secrets. A public Hosting deployment is not claimed here.
 
-## Verified live workflows
+## Demo credentials
 
-```powershell
-npm run test:live
-node --import tsx scripts/e2e-audio.ts <synthetic-test.wav>
-node --import tsx scripts/security-live.ts
-```
+These shared accounts are for fictional demonstration data only, not production use.
 
-The live test uses private demo password environment variables, real Firebase logins, real Groq translations, and actual Supabase reads/writes. It covers all three roles, task preview/assignment/acknowledgement/start/completion, incident queues and audit statuses, wage calculations/disputes, malformed input, duplicate requests, role denial and data retained after a fresh login. Synthetic test records remain visibly demo-only. Audio was verified using a locally generated synthetic speech recording; browser microphone and TTS voice availability depend on the device.
+| Role | Email | Password | Dashboard |
+| --- | --- | --- | --- |
+| Worker | worker@bhashabandhu.demo | Worker@123 | `/worker` |
+| Contractor | contractor@bhashabandhu.demo | Contractor@123 | `/contractor` |
+| Hospital Responder Demo | hospital@bhashabandhu.demo | Hospital@123 | `/hospital` |
 
-## Safety and verification
+Firebase Authentication validates passwords; the frontend never compares hardcoded passwords. Use separately managed accounts and credentials for a real deployment.
 
-Call 112 is a direct phone link; saving a report does not contact emergency services. Hospital screens and actions remain explicitly demo-only. No clinical diagnosis, real dispatch, maps, chat, raw-audio storage or patient records.
+## Simulation and privacy
 
-See `docs/ui-implementation-report.md` for current executed tests and `docs/implementation-gaps.md` for exact remaining configuration. Original PRD/TRD hosting/database recommendations are superseded by the user's latest architecture instruction.
+**DEMO ONLY — The hospital portal does not notify real hospitals or dispatch real emergency services.** Saving or acknowledging an incident does not request an ambulance. For urgent help, use the direct emergency-call action; do not wait for AI or demo acknowledgement.
+
+Use synthetic people, sites and incidents only. The app does not diagnose injuries or perform medical triage. Audio is processed temporarily and is not retained. Microphone and text-to-speech availability depend on the browser/device; readable text and clear fallbacks remain available.
+
+Private `.env` files, database passwords, Groq API keys, Supabase service-role keys and private credentials are excluded from version control. Only placeholder `.env.example` files are included.
+
+See [the verification report](docs/ui-implementation-report.md) for executed checks and deployment limitations.
