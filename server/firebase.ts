@@ -19,8 +19,15 @@ export async function verifyIdentity(token: string): Promise<{ uid: string }> {
   return { uid: claims.uid };
 }
 export function publicConfig() {
-  const apiKey = process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
-  const appId = process.env.VITE_FIREBASE_APP_ID || process.env.FIREBASE_APP_ID;
-  if (!apiKey || !appId) throw new AppError(503, 'FIREBASE_CONFIG_MISSING', 'Firebase web configuration is missing: FIREBASE_API_KEY and FIREBASE_APP_ID. Login is unavailable until configured.');
-  return { firebase: { apiKey, appId, projectId, authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || process.env.FIREBASE_AUTH_DOMAIN || `${projectId}.firebaseapp.com` }, demo: process.env.DEMO_MODE === 'true' };
+  const apiKey = process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY || 'AIzaSyAniKiRt49Yjywa6gE-j7mI2jwEKyIP-1Y';
+  const appId = process.env.VITE_FIREBASE_APP_ID || process.env.FIREBASE_APP_ID || '1:716301157311:web:0257c71d0cfc6bbba0170a';
+  return {
+    firebase: {
+      apiKey,
+      appId,
+      projectId,
+      authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || process.env.FIREBASE_AUTH_DOMAIN || `${projectId}.firebaseapp.com`
+    },
+    demo: process.env.DEMO_MODE === 'true'
+  };
 }
