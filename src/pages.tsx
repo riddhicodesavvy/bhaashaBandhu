@@ -1089,7 +1089,8 @@ export function IncidentDetail() {
         title={t('reportDetail')}
         back={hospital ? '/hospital' : '/contractor/incidents'}
       />
-      {!hospital && <DemoBanner />}
+      <DemoBanner />
+      {hospital && <EmergencyBanner />}
 
       <LoadBoundary load={load}>
         {incident && (
