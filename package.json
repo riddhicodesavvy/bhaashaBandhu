@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch server/index.ts",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && npm run build:api",
+    "build:api": "esbuild api/index.ts --bundle --platform=node --format=esm --packages=external --outfile=api/index.js",
     "start": "tsx server/index.ts",
     "check": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
