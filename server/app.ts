@@ -27,7 +27,8 @@ const ALLOWED_ORIGIN_PATTERNS = [
   /^https?:\/\/localhost(:\d+)?$/,
   /^https?:\/\/127\.0\.0\.1(:\d+)?$/,
   /^https:\/\/[a-z0-9-]+\.firebaseapp\.com$/,
-  /^https:\/\/[a-z0-9-]+\.web\.app$/
+  /^https:\/\/[a-z0-9-]+\.web\.app$/,
+  /^https:\/\/[a-z0-9-]+\.vercel\.app$/
 ];
 
 function isAllowedOrigin(origin: string, hostHeader?: string): boolean {
