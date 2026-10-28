@@ -16,7 +16,7 @@ try {
 }
 
 export default async function handler(req: IncomingMessage, res: ServerResponse): Promise<void> {
-  // If Vercel rewrote the path (e.g., from /api/me to /api/index), restore original request URL
+  // If Vercel rewrote the path (e.g. via /api/(.*) -> /api), restore the original client URL
   const matchedPath = req.headers['x-matched-path'];
   if (typeof matchedPath === 'string' && matchedPath.startsWith('/api')) {
     req.url = matchedPath;
@@ -67,6 +67,10 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   }
 
   return new Promise((resolve, reject) => {
+    res.once('finish', resolve);
+    res.once('close', resolve);
+    res.once('error', reject);
+
     appInstance!(
       req as unknown as express.Request,
       res as unknown as express.Response,
