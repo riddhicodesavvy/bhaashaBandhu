@@ -1,6 +1,4 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
-
-export default function handler(req: IncomingMessage, res: ServerResponse): void {
+export default function handler(req, res) {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');
   res.end(
