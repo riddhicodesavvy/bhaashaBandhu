@@ -30,7 +30,15 @@ function numberTokens(text: string): string[] {
     पांचवां: '5',
     पांचवीं: '5',
     पंचम: '5',
-    '৫ম': '5'
+    '৫ম': '5',
+    डेढ़: '1.5',
+    देड़: '1.5',
+    দেড়: '1.5',
+    ढाई: '2.5',
+    আড়াই: '2.5',
+    आधा: '0.5',
+    অর্ধেক: '0.5',
+    আধ: '0.5'
   };
   let normalized = text
     .replace(/[०-९]/g, char => String(char.charCodeAt(0) - 0x0966))
@@ -140,8 +148,8 @@ export async function translateTask(
   }
 
   for (const field of ['title', 'instructions', 'safetyNotes'] as const) {
-    const sourceNumbers = numberTokens(original[field]);
-    const destinationNumbers = numberTokens(parsed.data[field]);
+    const sourceNumbers = numberTokens(original[field]).sort();
+    const destinationNumbers = numberTokens(parsed.data[field]).sort();
     if (
       sourceNumbers.length !== destinationNumbers.length ||
       sourceNumbers.some((val, idx) => val !== destinationNumbers[idx])

@@ -324,7 +324,15 @@ function numberTokens(text) {
     \u092A\u093E\u0902\u091A\u0935\u093E\u0902: "5",
     \u092A\u093E\u0902\u091A\u0935\u0940\u0902: "5",
     \u092A\u0902\u091A\u092E: "5",
-    "\u09EB\u09AE": "5"
+    "\u09EB\u09AE": "5",
+    \u0921\u0947\u0922\u093C: "1.5",
+    \u0926\u0947\u0921\u093C: "1.5",
+    \u09A6\u09C7\u09A1\u09BC: "1.5",
+    \u0922\u093E\u0908: "2.5",
+    \u0986\u09A1\u09BC\u09BE\u0987: "2.5",
+    \u0906\u0927\u093E: "0.5",
+    \u0985\u09B0\u09CD\u09A7\u09C7\u0995: "0.5",
+    \u0986\u09A7: "0.5"
   };
   let normalized = text.replace(/[०-९]/g, (char) => String(char.charCodeAt(0) - 2406)).replace(/[০-৯]/g, (char) => String(char.charCodeAt(0) - 2534));
   for (const [word, digit] of Object.entries(ordinals)) {
@@ -417,8 +425,8 @@ async function translateTask(original, source, target) {
     throw new AppError(502, "INVALID_AI_RESULT", "Translation returned invalid fields. Please retry.");
   }
   for (const field of ["title", "instructions", "safetyNotes"]) {
-    const sourceNumbers = numberTokens(original[field]);
-    const destinationNumbers = numberTokens(parsed.data[field]);
+    const sourceNumbers = numberTokens(original[field]).sort();
+    const destinationNumbers = numberTokens(parsed.data[field]).sort();
     if (sourceNumbers.length !== destinationNumbers.length || sourceNumbers.some((val, idx) => val !== destinationNumbers[idx])) {
       throw new AppError(
         502,
