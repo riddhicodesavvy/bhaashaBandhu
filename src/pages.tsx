@@ -60,6 +60,10 @@ export function Login() {
   const [working, setWorking] = useState(false);
   const [loginError, setLoginError] = useState('');
 
+  if (busy) {
+    return <Loading />;
+  }
+
   if (profile && user) {
     return <Navigate replace to={home[profile.role]} />;
   }
@@ -145,7 +149,7 @@ export function Login() {
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="name@example.com"
+                  placeholder={t('emailPlaceholder')}
                 />
               </label>
 
@@ -1062,7 +1066,7 @@ export function IncidentList() {
 
 export function IncidentDetail() {
   const { id } = useParams();
-  const { t, profile } = useApp();
+  const { t, locale, profile } = useApp();
   const load = useLoad<Incident>(`/incidents/${encodeURIComponent(id!)}`);
   const site = useLoad<Site>('/site');
   const [busy, setBusy] = useState(false);
@@ -1082,6 +1086,10 @@ export function IncidentDetail() {
       setBusy(false);
     }
   }
+
+  const activeTranslation =
+    (incident?.translations && incident.translations[locale]) ||
+    (locale === 'en' ? incident?.englishTranslation : null);
 
   return (
     <>
@@ -1109,33 +1117,39 @@ export function IncidentDetail() {
 
               <section>
                 <h3>
-                  {t('original')} · {languageNames[incident.sourceLanguage]}
+                  {t('original')} · {t(incident.sourceLanguage as Key)}
                 </h3>
                 <p className="instruction" lang={incident.sourceLanguage}>
                   {incident.originalText}
                 </p>
               </section>
 
-              <section className="translation-box">
-                <h3>{t('englishTranslation')}</h3>
-                {incident.englishTranslation ? (
-                  <p className="instruction" lang="en">
-                    {incident.englishTranslation}
-                  </p>
-                ) : (
-                  <>
-                    <p>{t('translationUnavailable')}</p>
-                    <button
-                      type="button"
-                      className="button secondary"
-                      disabled={busy}
-                      onClick={() => void action('retry-translation')}
-                    >
-                      {t('retryTranslation')}
-                    </button>
-                  </>
-                )}
-              </section>
+              {locale !== incident.sourceLanguage && (
+                <section className="translation-box">
+                  <h3>
+                    {locale === 'en'
+                      ? t('englishTranslation')
+                      : `${t(locale as Key)} ${t('preview')}`}
+                  </h3>
+                  {activeTranslation ? (
+                    <p className="instruction" lang={locale}>
+                      {activeTranslation}
+                    </p>
+                  ) : (
+                    <>
+                      <p>{t('translationUnavailable')}</p>
+                      <button
+                        type="button"
+                        className="button secondary"
+                        disabled={busy}
+                        onClick={() => void action('retry-translation')}
+                      >
+                        {t('retryTranslation')}
+                      </button>
+                    </>
+                  )}
+                </section>
+              )}
 
               {/* Complete Clinical SBAR Emergency Handover Protocol Panel */}
               {incident.sbarHandover && (
@@ -1144,7 +1158,7 @@ export function IncidentDetail() {
                     <h3>
                       <ShieldCheck size={18} aria-hidden="true" /> {t('sbarHandover')}
                     </h3>
-                    <span className="badge">CLINICAL SBAR PROTOCOL</span>
+                    <span className="badge">{t('clinicalSbarBadge')}</span>
                   </div>
 
                   <div className="sbar-grid">
@@ -1152,7 +1166,7 @@ export function IncidentDetail() {
                       <strong>{t('sbarSituation')} (S):</strong>
                       <p>{incident.sbarHandover.situation}</p>
                       {incident.sbarHandover.injuryType && (
-                        <small>Trauma: {incident.sbarHandover.injuryType}</small>
+                        <small>{t('trauma')}: {incident.sbarHandover.injuryType}</small>
                       )}
                     </div>
 
@@ -1160,7 +1174,7 @@ export function IncidentDetail() {
                       <strong>{t('sbarBackground')} (B):</strong>
                       <p>{incident.sbarHandover.background}</p>
                       {incident.sbarHandover.ppeStatus && (
-                        <small>PPE: {incident.sbarHandover.ppeStatus}</small>
+                        <small>{t('ppe')}: {incident.sbarHandover.ppeStatus}</small>
                       )}
                     </div>
 
@@ -1168,7 +1182,7 @@ export function IncidentDetail() {
                       <strong>{t('sbarAssessment')} (A):</strong>
                       <p>{incident.sbarHandover.assessment}</p>
                       {incident.sbarHandover.consciousnessState && (
-                        <small>Vitals / Neurological: {incident.sbarHandover.consciousnessState}</small>
+                        <small>{t('vitals')}: {incident.sbarHandover.consciousnessState}</small>
                       )}
                     </div>
 
@@ -1176,7 +1190,7 @@ export function IncidentDetail() {
                       <strong>{t('sbarRecommendation')} (R):</strong>
                       <p>{incident.sbarHandover.recommendation}</p>
                       {incident.sbarHandover.bocwInsuranceId && (
-                        <small>BOCW Policy: {incident.sbarHandover.bocwInsuranceId}</small>
+                        <small>{t('bocwPolicy')}: {incident.sbarHandover.bocwInsuranceId}</small>
                       )}
                     </div>
                   </div>
@@ -1386,7 +1400,7 @@ export function WagePage() {
 
             <label>
               {t('deductionReason')}
-              <input name="deductionReason" maxLength={300} placeholder="e.g. Weekly Mess Khuraki" />
+              <input name="deductionReason" maxLength={300} placeholder={t('deductionReasonPlaceholder')} />
             </label>
 
             <label>
@@ -1445,7 +1459,7 @@ export function WagePage() {
 
                   {w.deductionReason && (
                     <p className="helper">
-                      <strong>Deductions:</strong> {w.deductionReason}
+                      <strong>{t('deductions')}:</strong> {w.deductionReason}
                     </p>
                   )}
 
@@ -1465,7 +1479,7 @@ export function WagePage() {
 
                   {w.overtimeRate >= statutoryOtRate && w.overtimeHours > 0 && (
                     <small className="teal" style={{ display: 'block', margin: '4px 0' }}>
-                      ✓ {t('bocwCompliance')} (Statutory 2× OT: {money(statutoryOtRate)}/hr)
+                      ✓ {t('bocwCompliance')} ({t('bocwOvertime')}: {money(statutoryOtRate)}/hr)
                     </small>
                   )}
 

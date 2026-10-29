@@ -27,15 +27,30 @@ const decode = <T>(kind: Kind, row: Row<T>): Envelope<T> => ({
   version: row.version
 });
 
+const DEFAULT_SUPABASE_URL = 'https://sdgdmplwvtplvtcndusy.supabase.co';
+const DEFAULT_SUPABASE_GATEWAY_URL = 'https://sdgdmplwvtplvtcndusy.supabase.co/functions/v1/bb-data';
+
 /**
  * Server-only PostgreSQL Data API with Firebase-authenticated Supabase gateway fallback.
  * Supabase Auth is not used; authorization is cryptographically tied to verified Firebase session UIDs.
  */
 export class SupabaseStore implements Store {
+  private get gatewayUrl(): string | undefined {
+    return (
+      process.env.SUPABASE_GATEWAY_URL ||
+      (process.env.NODE_ENV === 'production' && !process.env.SUPABASE_SERVICE_ROLE_KEY
+        ? DEFAULT_SUPABASE_GATEWAY_URL
+        : undefined)
+    );
+  }
+
   private async gateway<T>(body: unknown): Promise<T> {
-    const origin = process.env.SUPABASE_URL;
+    const gateway = this.gatewayUrl;
+    const origin =
+      process.env.SUPABASE_URL ||
+      (gateway ? new URL(gateway).origin : undefined);
     const token = requestIdentity.getStore();
-    if (!origin || !process.env.SUPABASE_GATEWAY_URL) {
+    if (!origin || !gateway) {
       throw new AppError(503, 'SUPABASE_NOT_CONFIGURED', 'Application data connection is not configured.');
     }
     if (!token) {
@@ -44,7 +59,7 @@ export class SupabaseStore implements Store {
 
     let response: Response;
     try {
-      response = await fetch(process.env.SUPABASE_GATEWAY_URL, {
+      response = await fetch(gateway, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +85,7 @@ export class SupabaseStore implements Store {
   }
 
   private async request<T>(table: string, params: URLSearchParams, options: RequestInit = {}): Promise<T> {
-    const origin = process.env.SUPABASE_URL;
+    const origin = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!origin || !key) {
       throw new AppError(
@@ -128,7 +143,7 @@ export class SupabaseStore implements Store {
   }
 
   async list<T>(kind: Kind, scope: { siteId?: string; ownerId?: string } = {}): Promise<Envelope<T>[]> {
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_GATEWAY_URL) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && this.gatewayUrl) {
       return this.gateway<Envelope<T>[]>({ operation: 'list', kind, scope });
     }
     const rows: Envelope<T>[] = [];
@@ -153,7 +168,7 @@ export class SupabaseStore implements Store {
   async get<T>(id: string): Promise<Envelope<T> | null> {
     const kind = id.split(':', 1)[0] as Kind;
     if (!Object.hasOwn(tables, kind)) return null;
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_GATEWAY_URL) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && this.gatewayUrl) {
       return this.gateway<Envelope<T> | null>({ operation: 'get', kind, id });
     }
     const rows = await this.request<Row<T>[]>(
@@ -168,7 +183,7 @@ export class SupabaseStore implements Store {
   }
 
   async insert<T>(row: Envelope<T>): Promise<void> {
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_GATEWAY_URL) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && this.gatewayUrl) {
       await this.gateway({ operation: 'insert', kind: row.kind, row });
       return;
     }
@@ -185,7 +200,7 @@ export class SupabaseStore implements Store {
   }
 
   async compareAndSet<T>(row: Envelope<T>, expectedVersion: number): Promise<boolean> {
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_GATEWAY_URL) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && this.gatewayUrl) {
       return this.gateway<boolean>({
         operation: 'update',
         kind: row.kind,

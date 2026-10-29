@@ -10,9 +10,34 @@ const translated = z.object({
 });
 
 function numberTokens(text: string): string[] {
-  const normalized = text
+  const ordinals: Record<string, string> = {
+    पहला: '1',
+    पहली: '1',
+    प्रथम: '1',
+    '১ম': '1',
+    दूसरा: '2',
+    दूसरी: '2',
+    द्वितीय: '2',
+    '২য়': '2',
+    तीसरा: '3',
+    तीसरी: '3',
+    तृतीय: '3',
+    '৩য়': '3',
+    चौथा: '4',
+    चौथी: '4',
+    चतुर्थ: '4',
+    '৪র্থ': '4',
+    पांचवां: '5',
+    पांचवीं: '5',
+    पंचम: '5',
+    '৫ম': '5'
+  };
+  let normalized = text
     .replace(/[०-९]/g, char => String(char.charCodeAt(0) - 0x0966))
     .replace(/[০-৯]/g, char => String(char.charCodeAt(0) - 0x09e6));
+  for (const [word, digit] of Object.entries(ordinals)) {
+    normalized = normalized.replaceAll(word, digit);
+  }
   return normalized.match(/\d+(?:[.,:]\d+)*/g) || [];
 }
 
@@ -95,10 +120,12 @@ export async function translateTask(
     safetyNotes: normalizeIndicText(original.safetyNotes)
   };
 
+  const targetName = target === 'hi' ? 'Hindi' : target === 'bn' ? 'Bengali' : 'English';
   const system =
-    'You translate construction work instructions faithfully. ' +
+    `You translate construction work instructions faithfully into ${targetName}. ` +
     'Return ONLY JSON with title, instructions, safetyNotes strings in target language. ' +
-    'Preserve every number as digits (do not spell numbers out), proper names, deadlines, units, negation, and safety instructions. ' +
+    'Preserve every number as digits (e.g. 2nd -> 2nd or 2री or ২য়; 4 -> 4). Do not spell numbers out. ' +
+    'Preserve proper names, deadlines, units, negation, and safety instructions. ' +
     'Do not add facts. Translate empty safetyNotes as empty string.';
 
   const result = await jsonCompletion(system, {
@@ -130,18 +157,23 @@ export async function translateTask(
   return parsed.data;
 }
 
-export async function translateIncident(originalText: string, source: Locale): Promise<string> {
-  if (source === 'en') return originalText;
+export async function translateIncident(
+  originalText: string,
+  source: Locale,
+  target: Locale = 'en'
+): Promise<string> {
+  if (source === target) return originalText;
 
   const normalized = normalizeIndicText(originalText);
+  const targetName = target === 'hi' ? 'Hindi' : target === 'bn' ? 'Bengali' : 'English';
 
   const system =
-    'Translate this worker report faithfully into English. ' +
+    `Translate this worker report faithfully into ${targetName}. ` +
     'Preserve uncertainty, numbers, locations, and negation. ' +
     'Do not diagnose, infer severity, suggest medical treatment, or claim unverified facts. ' +
     'Never invent missing information. Return ONLY JSON {"translatedText":"..."}.';
 
-  const result = await jsonCompletion(system, { originalText: normalized, source });
+  const result = await jsonCompletion(system, { originalText: normalized, source, target });
 
   const parsed = z.object({ translatedText: z.string().min(1).max(10000) }).safeParse(result);
   if (!parsed.success) {

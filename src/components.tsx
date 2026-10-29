@@ -215,9 +215,13 @@ export const TaskCard = memo(function TaskCard({
     <details className="card task-card">
       <summary>{content}</summary>
       <div className="detail-body">
-        <p>{task.original.instructions}</p>
-        {task.original.safetyNotes && (
-          <p className="notice">{task.original.safetyNotes}</p>
+        <p lang={translated ? locale : task.sourceLanguage}>
+          {(translated || task.original).instructions}
+        </p>
+        {(translated || task.original).safetyNotes && (
+          <p className="notice" lang={translated ? locale : task.sourceLanguage}>
+            {(translated || task.original).safetyNotes}
+          </p>
         )}
         {task.acknowledgedAt && (
           <p>
@@ -247,7 +251,14 @@ export const IncidentCard = memo(function IncidentCard({
   to?: string;
   children?: ReactNode;
 }) {
-  const { t } = useApp();
+  const { locale, t } = useApp();
+  const previewText =
+    (incident.translations && incident.translations[locale]) ||
+    (locale === 'en' && incident.englishTranslation ? incident.englishTranslation : null) ||
+    (incident.sourceLanguage === locale ? incident.originalText : null) ||
+    incident.englishTranslation ||
+    incident.originalText;
+
   const content = (
     <>
       <div className="card-top">
@@ -258,11 +269,11 @@ export const IncidentCard = memo(function IncidentCard({
       </div>
       <h3>{t(incident.category)}</h3>
       <p>{incident.location}</p>
-      <p className="report-preview" lang={incident.sourceLanguage}>
-        {incident.originalText}
+      <p className="report-preview" lang={locale}>
+        {previewText}
       </p>
       <p className="meta">
-        <DateText value={incident.createdAt} /> · {languageNames[incident.sourceLanguage]}
+        <DateText value={incident.createdAt} /> · {t(incident.sourceLanguage as Key)}
       </p>
     </>
   );
@@ -464,20 +475,24 @@ export function SpeechRecorder({
         return;
       }
       stream.current = audio;
-      const mimeType = [
+      const candidates = [
         'audio/webm;codecs=opus',
+        'audio/webm',
         'audio/mp4',
-        'audio/ogg;codecs=opus'
-      ].find(type => MediaRecorder.isTypeSupported(type));
+        'audio/ogg;codecs=opus',
+        'audio/ogg',
+        'audio/wav'
+      ];
+      const mimeType =
+        candidates.find(type => {
+          try {
+            return typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type);
+          } catch {
+            return false;
+          }
+        }) || '';
 
-      if (!mimeType) {
-        cleanup();
-        setState('idle');
-        setError(t('micDenied'));
-        return;
-      }
-
-      const media = new MediaRecorder(audio, { mimeType });
+      const media = mimeType ? new MediaRecorder(audio, { mimeType }) : new MediaRecorder(audio);
       recorder.current = media;
       const chunks: BlobPart[] = [];
       let bytes = 0;
@@ -500,8 +515,9 @@ export function SpeechRecorder({
           return;
         }
         setState('uploading');
+        const finalType = media.mimeType || mimeType || 'audio/webm';
         const form = new FormData();
-        form.append('audio', new Blob(chunks, { type: mimeType }), 'recording');
+        form.append('audio', new Blob(chunks, { type: finalType }), 'recording');
         form.append('language', locale);
         try {
           const result = await api<{ text: string }>('/audio/transcribe', {

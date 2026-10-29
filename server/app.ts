@@ -263,7 +263,7 @@ export function createApp(options: {
   // Audio Upload & Transcription
   const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 3 * 1024 * 1024, files: 1, fields: 1 },
+    limits: { fileSize: 3 * 1024 * 1024, files: 1, fields: 5 },
     fileFilter: (_req, file, cb) => {
       const mime = file.mimetype.split(';')[0];
       if (!['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav', 'audio/mpeg'].includes(mime)) {

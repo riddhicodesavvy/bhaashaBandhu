@@ -389,11 +389,26 @@ export class Service {
       return scopedEnvelope.payload;
     }
 
+    const translations: Partial<Record<Locale, string>> = {
+      [input.sourceLanguage]: input.originalText
+    };
+
     let englishTranslation: string | null = null;
     try {
-      englishTranslation = await this.ai.translateIncident(input.originalText, input.sourceLanguage);
+      englishTranslation = await this.ai.translateIncident(input.originalText, input.sourceLanguage, 'en');
+      translations.en = englishTranslation;
     } catch {
       // Explicit unavailable state; never fabricate translated content
+    }
+
+    for (const loc of ['hi', 'bn'] as const) {
+      if (loc !== input.sourceLanguage && !translations[loc]) {
+        try {
+          translations[loc] = await this.ai.translateIncident(input.originalText, input.sourceLanguage, loc);
+        } catch {
+          // Graceful degradation
+        }
+      }
     }
 
     const now = new Date().toISOString();
@@ -430,6 +445,7 @@ export class Service {
       urgency: input.urgency,
       location: input.location,
       englishTranslation,
+      translations,
       translationStatus: englishTranslation ? 'ready' : 'unavailable',
       status: 'reported',
       isSimulation: true,
@@ -521,13 +537,29 @@ export class Service {
   async retryIncidentTranslation(s: Session, id: string): Promise<Incident> {
     this.allow(s, 'contractor', 'hospital_responder');
     const report = await this.incident(s, id);
+    const translations: Partial<Record<Locale, string>> = {
+      ...(report.translations || {}),
+      [report.sourceLanguage]: report.originalText
+    };
     const translation = await this.ai.translateIncident(
       report.originalText,
-      report.sourceLanguage
+      report.sourceLanguage,
+      'en'
     );
+    translations.en = translation;
+    for (const loc of ['hi', 'bn'] as const) {
+      if (loc !== report.sourceLanguage && !translations[loc]) {
+        try {
+          translations[loc] = await this.ai.translateIncident(report.originalText, report.sourceLanguage, loc);
+        } catch {
+          // Graceful fallback
+        }
+      }
+    }
     return this.update<Incident>(s, `incident:${id}`, 'incident', false, (i) => ({
       ...i,
       englishTranslation: translation,
+      translations,
       translationStatus: 'ready',
       updatedAt: new Date().toISOString()
     }));

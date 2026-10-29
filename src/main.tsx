@@ -59,7 +59,10 @@ function Protected({ role }: { role: Role }) {
  * Entry router redirecting authenticated users to their respective home screen.
  */
 function Entry() {
-  const { profile } = useApp();
+  const { profile, busy } = useApp();
+  if (busy) {
+    return <Loading />;
+  }
   return <Navigate replace to={profile ? home[profile.role] : '/login'} />;
 }
 

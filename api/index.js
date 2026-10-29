@@ -111,11 +111,17 @@ var decode = (kind, row) => ({
   payload: row.payload,
   version: row.version
 });
+var DEFAULT_SUPABASE_URL = "https://sdgdmplwvtplvtcndusy.supabase.co";
+var DEFAULT_SUPABASE_GATEWAY_URL = "https://sdgdmplwvtplvtcndusy.supabase.co/functions/v1/bb-data";
 var SupabaseStore = class {
+  get gatewayUrl() {
+    return process.env.SUPABASE_GATEWAY_URL || (process.env.NODE_ENV === "production" && !process.env.SUPABASE_SERVICE_ROLE_KEY ? DEFAULT_SUPABASE_GATEWAY_URL : void 0);
+  }
   async gateway(body) {
-    const origin = process.env.SUPABASE_URL;
+    const gateway = this.gatewayUrl;
+    const origin = process.env.SUPABASE_URL || (gateway ? new URL(gateway).origin : void 0);
     const token = requestIdentity.getStore();
-    if (!origin || !process.env.SUPABASE_GATEWAY_URL) {
+    if (!origin || !gateway) {
       throw new AppError(503, "SUPABASE_NOT_CONFIGURED", "Application data connection is not configured.");
     }
     if (!token) {
@@ -123,7 +129,7 @@ var SupabaseStore = class {
     }
     let response;
     try {
-      response = await fetch(process.env.SUPABASE_GATEWAY_URL, {
+      response = await fetch(gateway, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -147,7 +153,7 @@ var SupabaseStore = class {
     return result.data;
   }
   async request(table, params, options = {}) {
-    const origin = process.env.SUPABASE_URL;
+    const origin = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!origin || !key) {
       throw new AppError(
@@ -198,7 +204,7 @@ var SupabaseStore = class {
     return response.json();
   }
   async list(kind, scope = {}) {
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_GATEWAY_URL) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && this.gatewayUrl) {
       return this.gateway({ operation: "list", kind, scope });
     }
     const rows = [];
@@ -222,7 +228,7 @@ var SupabaseStore = class {
   async get(id) {
     const kind = id.split(":", 1)[0];
     if (!Object.hasOwn(tables, kind)) return null;
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_GATEWAY_URL) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && this.gatewayUrl) {
       return this.gateway({ operation: "get", kind, id });
     }
     const rows = await this.request(
@@ -236,7 +242,7 @@ var SupabaseStore = class {
     return rows[0] ? decode(kind, rows[0]) : null;
   }
   async insert(row) {
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_GATEWAY_URL) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && this.gatewayUrl) {
       await this.gateway({ operation: "insert", kind: row.kind, row });
       return;
     }
@@ -252,7 +258,7 @@ var SupabaseStore = class {
     });
   }
   async compareAndSet(row, expectedVersion) {
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_GATEWAY_URL) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && this.gatewayUrl) {
       return this.gateway({
         operation: "update",
         kind: row.kind,
@@ -298,7 +304,32 @@ var translated = z2.object({
   safetyNotes: z2.string().max(3e3)
 });
 function numberTokens(text) {
-  const normalized = text.replace(/[०-९]/g, (char) => String(char.charCodeAt(0) - 2406)).replace(/[০-৯]/g, (char) => String(char.charCodeAt(0) - 2534));
+  const ordinals = {
+    \u092A\u0939\u0932\u093E: "1",
+    \u092A\u0939\u0932\u0940: "1",
+    \u092A\u094D\u0930\u0925\u092E: "1",
+    "\u09E7\u09AE": "1",
+    \u0926\u0942\u0938\u0930\u093E: "2",
+    \u0926\u0942\u0938\u0930\u0940: "2",
+    \u0926\u094D\u0935\u093F\u0924\u0940\u092F: "2",
+    "\u09E8\u09AF\u09BC": "2",
+    \u0924\u0940\u0938\u0930\u093E: "3",
+    \u0924\u0940\u0938\u0930\u0940: "3",
+    \u0924\u0943\u0924\u0940\u092F: "3",
+    "\u09E9\u09AF\u09BC": "3",
+    \u091A\u094C\u0925\u093E: "4",
+    \u091A\u094C\u0925\u0940: "4",
+    \u091A\u0924\u0941\u0930\u094D\u0925: "4",
+    "\u09EA\u09B0\u09CD\u09A5": "4",
+    \u092A\u093E\u0902\u091A\u0935\u093E\u0902: "5",
+    \u092A\u093E\u0902\u091A\u0935\u0940\u0902: "5",
+    \u092A\u0902\u091A\u092E: "5",
+    "\u09EB\u09AE": "5"
+  };
+  let normalized = text.replace(/[०-९]/g, (char) => String(char.charCodeAt(0) - 2406)).replace(/[০-৯]/g, (char) => String(char.charCodeAt(0) - 2534));
+  for (const [word, digit] of Object.entries(ordinals)) {
+    normalized = normalized.replaceAll(word, digit);
+  }
   return normalized.match(/\d+(?:[.,:]\d+)*/g) || [];
 }
 async function groq(path, body, json) {
@@ -374,7 +405,8 @@ async function translateTask(original, source, target) {
     instructions: normalizeIndicText(original.instructions),
     safetyNotes: normalizeIndicText(original.safetyNotes)
   };
-  const system = "You translate construction work instructions faithfully. Return ONLY JSON with title, instructions, safetyNotes strings in target language. Preserve every number as digits (do not spell numbers out), proper names, deadlines, units, negation, and safety instructions. Do not add facts. Translate empty safetyNotes as empty string.";
+  const targetName = target === "hi" ? "Hindi" : target === "bn" ? "Bengali" : "English";
+  const system = `You translate construction work instructions faithfully into ${targetName}. Return ONLY JSON with title, instructions, safetyNotes strings in target language. Preserve every number as digits (e.g. 2nd -> 2nd or 2\u0930\u0940 or \u09E8\u09AF\u09BC; 4 -> 4). Do not spell numbers out. Preserve proper names, deadlines, units, negation, and safety instructions. Do not add facts. Translate empty safetyNotes as empty string.`;
   const result = await jsonCompletion(system, {
     original: normalizedOriginal,
     source,
@@ -397,11 +429,12 @@ async function translateTask(original, source, target) {
   }
   return parsed.data;
 }
-async function translateIncident(originalText, source) {
-  if (source === "en") return originalText;
+async function translateIncident(originalText, source, target = "en") {
+  if (source === target) return originalText;
   const normalized = normalizeIndicText(originalText);
-  const system = 'Translate this worker report faithfully into English. Preserve uncertainty, numbers, locations, and negation. Do not diagnose, infer severity, suggest medical treatment, or claim unverified facts. Never invent missing information. Return ONLY JSON {"translatedText":"..."}.';
-  const result = await jsonCompletion(system, { originalText: normalized, source });
+  const targetName = target === "hi" ? "Hindi" : target === "bn" ? "Bengali" : "English";
+  const system = `Translate this worker report faithfully into ${targetName}. Preserve uncertainty, numbers, locations, and negation. Do not diagnose, infer severity, suggest medical treatment, or claim unverified facts. Never invent missing information. Return ONLY JSON {"translatedText":"..."}.`;
+  const result = await jsonCompletion(system, { originalText: normalized, source, target });
   const parsed = z2.object({ translatedText: z2.string().min(1).max(1e4) }).safeParse(result);
   if (!parsed.success) {
     throw new AppError(502, "INVALID_AI_RESULT", "Incident translation is unavailable.");
@@ -772,10 +805,22 @@ var Service = class {
       const scopedEnvelope = await this.scoped(s, `incident:${id}`, "incident", true);
       return scopedEnvelope.payload;
     }
+    const translations = {
+      [input.sourceLanguage]: input.originalText
+    };
     let englishTranslation = null;
     try {
-      englishTranslation = await this.ai.translateIncident(input.originalText, input.sourceLanguage);
+      englishTranslation = await this.ai.translateIncident(input.originalText, input.sourceLanguage, "en");
+      translations.en = englishTranslation;
     } catch {
+    }
+    for (const loc of ["hi", "bn"]) {
+      if (loc !== input.sourceLanguage && !translations[loc]) {
+        try {
+          translations[loc] = await this.ai.translateIncident(input.originalText, input.sourceLanguage, loc);
+        } catch {
+        }
+      }
     }
     const now = (/* @__PURE__ */ new Date()).toISOString();
     const sbarHandover = {
@@ -805,6 +850,7 @@ var Service = class {
       urgency: input.urgency,
       location: input.location,
       englishTranslation,
+      translations,
       translationStatus: englishTranslation ? "ready" : "unavailable",
       status: "reported",
       isSimulation: true,
@@ -890,13 +936,28 @@ var Service = class {
   async retryIncidentTranslation(s, id) {
     this.allow(s, "contractor", "hospital_responder");
     const report = await this.incident(s, id);
+    const translations = {
+      ...report.translations || {},
+      [report.sourceLanguage]: report.originalText
+    };
     const translation = await this.ai.translateIncident(
       report.originalText,
-      report.sourceLanguage
+      report.sourceLanguage,
+      "en"
     );
+    translations.en = translation;
+    for (const loc of ["hi", "bn"]) {
+      if (loc !== report.sourceLanguage && !translations[loc]) {
+        try {
+          translations[loc] = await this.ai.translateIncident(report.originalText, report.sourceLanguage, loc);
+        } catch {
+        }
+      }
+    }
     return this.update(s, `incident:${id}`, "incident", false, (i) => ({
       ...i,
       englishTranslation: translation,
+      translations,
       translationStatus: "ready",
       updatedAt: (/* @__PURE__ */ new Date()).toISOString()
     }));
@@ -1139,7 +1200,7 @@ function createApp(options = {}) {
   });
   const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 3 * 1024 * 1024, files: 1, fields: 1 },
+    limits: { fileSize: 3 * 1024 * 1024, files: 1, fields: 5 },
     fileFilter: (_req, file, cb) => {
       const mime = file.mimetype.split(";")[0];
       if (!["audio/webm", "audio/mp4", "audio/ogg", "audio/wav", "audio/mpeg"].includes(mime)) {

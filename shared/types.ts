@@ -140,6 +140,7 @@ export interface Incident {
   originalText: string;
   sourceLanguage: Locale;
   englishTranslation: string | null;
+  translations?: Partial<Record<Locale, string>>;
   translationStatus: 'ready' | 'unavailable';
   category: Category;
   urgency: Urgency;

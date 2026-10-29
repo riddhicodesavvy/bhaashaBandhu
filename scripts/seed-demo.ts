@@ -249,6 +249,11 @@ async function main() {
       originalText: 'पिलर के पास शटरिंग हटाते समय पैर फिसल गया और नीचे खुले खड़े 16mm के सरिया पर दायां पैर पड़ गया। सेफ्टी बूट के किनारे से सरिया पैर में घुस गया। खून बह रहा है। साइट पर प्राथमिक उपचार (प्रेशर बैंडेज) कर दिया है, तुरंत अस्पताल और टेटनस इंजेक्शन की ज़रूरत है।',
       sourceLanguage: 'hi',
       englishTranslation: 'While stripping formwork near the pillar, my foot slipped and my right foot stepped onto an exposed upright 16mm rebar. The rebar penetrated the foot through the edge of the safety boot. Active bleeding. Sterile pressure bandage applied on site; immediate emergency medical evaluation and tetanus toxoid injection required.',
+      translations: {
+        en: 'While stripping formwork near the pillar, my foot slipped and my right foot stepped onto an exposed upright 16mm rebar. The rebar penetrated the foot through the edge of the safety boot. Active bleeding. Sterile pressure bandage applied on site; immediate emergency medical evaluation and tetanus toxoid injection required.',
+        hi: 'पिलर के पास शटरिंग हटाते समय पैर फिसल गया और नीचे खुले खड़े 16mm के सरिया पर दायां पैर पड़ गया। सेफ्टी बूट के किनारे से सरिया पैर में घुस गया। खून बह रहा है। साइट पर प्राथमिक उपचार (प्रेशर बैंडेज) कर दिया है, तुरंत अस्पताल और टेटनस इंजेक्शन की ज़रूरत है।',
+        bn: 'পিলারের কাছে শাটারিং খোলার সময় পা পিছলে নিচে খোলা থাকা ১৬ মিমি রডের ওপর ডান পা পড়ে যায়। সেফটি বুটের পাশ দিয়ে রড পায়ে ঢুকে গেছে। রক্ত বের হচ্ছে। সাইটে প্রাথমিক চিকিৎসা (প্রেসার ব্যান্ডেজ) করা হয়েছে, অবিলম্বে হাসপাতাল এবং টিটেনাস ইনজেকশন প্রয়োজন।'
+      },
       translationStatus: 'ready',
       category: 'injury',
       urgency: 'urgent',
@@ -289,6 +294,11 @@ async function main() {
       originalText: 'চতুর্থ তলার মাচার একটি পাইপের কাপলার ঢিলে হয়ে পাইপটি নিচে সুরক্ষা জালে খসে পড়ে। নিচে কোনো শ্রমিক ছিল না, তাই কেউ আহত হয়নি। কিন্তু পুরো চারতলার মাচার ক্ল্যাম্পগুলো অবিলম্বে পুনরায় টাইট করা দরকার।',
       sourceLanguage: 'bn',
       englishTranslation: 'A pipe coupler on the 4th-floor scaffolding came loose and the pipe fell into the safety netting below. No workers were beneath it, so no injuries occurred. All scaffolding clamps on the 4th floor must be inspected and re-torqued immediately.',
+      translations: {
+        en: 'A pipe coupler on the 4th-floor scaffolding came loose and the pipe fell into the safety netting below. No workers were beneath it, so no injuries occurred. All scaffolding clamps on the 4th floor must be inspected and re-torqued immediately.',
+        hi: 'चौथी मंजिल के मचान का एक पाइप कपलर ढीला होकर नीचे सुरक्षा जाल में गिर गया। नीचे कोई मजदूर नहीं था, इसलिए कोई घायल नहीं हुआ। लेकिन चौथी मंजिल के सभी मचान क्लैंप का तुरंत निरीक्षण कर दोबारा कसने की जरूरत है।',
+        bn: 'চতুর্থ তলার মাচার একটি পাইপের কাপলার ঢিলে হয়ে পাইপটি নিচে সুরক্ষা জালে খসে পড়ে। নিচে কোনো শ্রমিক ছিল না, তাই কেউ আহত হয়নি। কিন্তু পুরো চারতলার মাচার ক্ল্যাম্পগুলো অবিলম্বে পুনরায় টাইট করা দরকার।'
+      },
       translationStatus: 'ready',
       category: 'near_miss',
       urgency: 'high',
@@ -328,6 +338,11 @@ async function main() {
       originalText: 'बेसमेंट -2 में बारिश का पानी 1 फीट तक भरा हुआ है और वहां 440V का मुख्य केबल पानी में डूबा हुआ है। केबल के जोड़ पर केवल काली टेप लिपटी है। वहां से चिंगारी निकलती देखी गई है। करंट लगने का गंभीर खतरा है। काम तुरंत रोक दिया गया है।',
       sourceLanguage: 'hi',
       englishTranslation: 'Basement -2 has 1 foot of standing rainwater and a 440V main feeder cable is submerged in the water. The cable joint is wrapped only with black tape. Sparks were observed. Severe electrocution hazard exists. Work has been halted immediately.',
+      translations: {
+        en: 'Basement -2 has 1 foot of standing rainwater and a 440V main feeder cable is submerged in the water. The cable joint is wrapped only with black tape. Sparks were observed. Severe electrocution hazard exists. Work has been halted immediately.',
+        hi: 'बेसमेंट -2 में बारिश का पानी 1 फीट तक भरा हुआ है और वहां 440V का मुख्य केबल पानी में डूबा हुआ है। केबल के जोड़ पर केवल काली टेप लिपटी है। वहां से चिंगारी निकलती देखी गई है। करंट लगने का गंभीर खतरा है। काम तुरंत रोक दिया गया है।',
+        bn: 'বেসমেন্ট -২ এ ১ ফুট বৃষ্টির পানি জমে আছে এবং ৪৪০ ভোল্টের প্রধান ফিডার তার পানির নিচে ডুবে রয়েছে। তারের জোড়ায় শুধু কালো টেপ জড়ানো। সেখান থেকে স্ফুলিঙ্গ বের হতে দেখা গেছে। বিদ্যুৎস্পৃষ্ট হওয়ার মারাত্মক ঝুঁকি রয়েছে। কাজ সাথে সাথে বন্ধ করা হয়েছে।'
+      },
       translationStatus: 'ready',
       category: 'unsafe_condition',
       urgency: 'urgent',
@@ -366,6 +381,11 @@ async function main() {
       originalText: 'दोपहर 2 बजे 42°C गर्मी में कंक्रीट वाइब्रेटर चलाते समय श्रमिक को अचानक चक्कर आया, तेज़ सिरदर्द हुआ और वह ज़मीन पर गिर पड़ा। अत्यधिक पसीना और डिहाइड्रेशन के लक्षण हैं। तुरंत छायादार प्राथमिक चिकित्सा कक्ष में ले जाकर ORS दिया गया है।',
       sourceLanguage: 'hi',
       englishTranslation: 'At 2 PM in 42°C extreme heat while operating a concrete vibrator, the worker suddenly became dizzy with severe headache and collapsed. Showing signs of profuse sweating and heat exhaustion. Immediately moved to the shaded first-aid station and administered ORS solution.',
+      translations: {
+        en: 'At 2 PM in 42°C extreme heat while operating a concrete vibrator, the worker suddenly became dizzy with severe headache and collapsed. Showing signs of profuse sweating and heat exhaustion. Immediately moved to the shaded first-aid station and administered ORS solution.',
+        hi: 'दोपहर 2 बजे 42°C गर्मी में कंक्रीट वाइब्रेटर चलाते समय श्रमिक को अचानक चक्कर आया, तेज़ सिरदर्द हुआ और वह ज़मीन पर गिर पड़ा। अत्यधिक पसीना और डिहाइड्रेशन के लक्षण हैं। तुरंत छायादार प्राथमिक चिकित्सा कक्ष में ले जाकर ORS दिया गया है।',
+        bn: 'দুপুর ২টায় ৪২ ডিগ্রি তীব্র গরমে কংক্রিট ভাইব্রেটর চালানোর সময় হঠাৎ মাথা ঘুরে পড়ে যান। প্রচুর ঘাম হচ্ছে এবং তীব্র মাথাব্যথা। তাৎক্ষণিকভাবে ছায়াযুক্ত প্রাথমিক চিকিৎসা কেন্দ্রে নিয়ে যাওয়া হয়েছে এবং ওআরএস স্যালাইন খাওয়ানো হয়েছে।'
+      },
       translationStatus: 'ready',
       category: 'hazard',
       urgency: 'high',
@@ -407,6 +427,11 @@ async function main() {
       originalText: 'तूफानी नाले की 2.5 मीटर गहरी खाई में अचानक मिट्टी धंसने लगी है और लकड़ी के ट्रेंच जैक में दरार आ गई है। यदि तुरंत मिट्टी हटाकर नया लोहे का सपोर्ट नहीं लगाया गया तो पूरी दीवार गिर सकती है।',
       sourceLanguage: 'hi',
       englishTranslation: 'Soil is actively sloughing into the 2.5-meter deep storm drain trench and the timber trench jack has developed a visible fracture. Unless soil weight is immediately cleared and steel trench boxes installed, the wall may suffer a catastrophic cave-in.',
+      translations: {
+        en: 'Soil is actively sloughing into the 2.5-meter deep storm drain trench and the timber trench jack has developed a visible fracture. Unless soil weight is immediately cleared and steel trench boxes installed, the wall may suffer a catastrophic cave-in.',
+        hi: 'तूफानी नाले की 2.5 मीटर गहरी खाई में अचानक मिट्टी धंसने लगी है और लकड़ी के ट्रेंच जैक में दरार आ गई है। यदि तुरंत मिट्टी हटाकर नया लोहे का सपोर्ट नहीं लगाया गया तो पूरी दीवार गिर सकती है।',
+        bn: 'বৃষ্টির পানির ২.৫ মিটার গভীর ড্রেনের পরিখায় মাটি ক্রমাগত ধসে পড়ছে এবং কাঠের সাপোর্ট জ্যাকে ফাটল দেখা দিয়েছে। অবিলম্বে মাটির চাপ সরিয়ে লোহার ট্রেঞ্চ বক্স না বসালে পুরো পরিখার দেওয়াল ধসে পড়তে পারে।'
+      },
       translationStatus: 'ready',
       category: 'hazard',
       urgency: 'high',
