@@ -30,6 +30,26 @@ async function fixture() {
   return { service, store };
 }
 const original = { title: 'Test instruction', instructions: 'Move 5 bags to Zone B.', safetyNotes: 'Wear safety shoes.' };
+test('incident coordinates persist with the same identity across roles, reload and status changes', async () => {
+  const { service, store } = await fixture();
+  const body = { originalText: 'Loose cable at the generator room.', sourceLanguage: 'en', category: 'hazard', urgency: 'medium', location: 'Generator room, Kattankulathur', latitude: 12.823, longitude: 80.044, requestId: randomUUID() };
+  const created = await service.createIncident(worker, body);
+  assert.equal((await service.createIncident(worker, body)).id, created.id);
+  const reloaded = new Service(store);
+  for (const actor of [worker, contractor, hospital]) {
+    const incident = await reloaded.incident(actor, created.id);
+    assert.equal(incident.location, body.location);
+    assert.equal(incident.latitude, body.latitude);
+    assert.equal(incident.longitude, body.longitude);
+  }
+  await reloaded.incidentAction(contractor, created.id, 'reviewed');
+  await reloaded.incidentAction(hospital, created.id, 'acknowledged_demo');
+  const persisted = await store.get<Incident>(`incident:${created.id}`);
+  assert.equal(persisted?.payload.latitude, body.latitude);
+  assert.equal(persisted?.payload.longitude, body.longitude);
+  await assert.rejects(() => service.createIncident(contractor, body), { status: 403 });
+  await assert.rejects(() => service.createIncident(worker, { ...body, requestId: randomUUID(), latitude: '12' }));
+});
 async function assign(service: Service) {
   const preview = await service.preview(contractor, { assignedTo: worker.uid, sourceLanguage: 'en', original });
   return service.createTask(contractor, { assignedTo: worker.uid, sourceLanguage: 'en', original, previewToken: preview.previewToken, location: 'Test Zone B', deadline: '2026-10-28T12:00:00.000Z' });
@@ -113,6 +133,9 @@ test('incident generation produces structured clinical SBAR handover', async () 
   assert.match(incident.sbarHandover.situation, /INJURY reported with urgent/);
   assert.match(incident.sbarHandover.background, /Tower B Level 4/);
   assert.ok(incident.sbarHandover.assessment);
+  for (const field of ['consciousnessState', 'bleedingStatus', 'firstAidGiven', 'bocwInsuranceId', 'ppeStatus', 'workerTrade', 'injuryType', 'emergencySiteContact', 'timeOfIncident'] as const) {
+    assert.equal(incident.sbarHandover[field], undefined, `${field} must remain unknown`);
+  }
   assert.match(incident.sbarHandover.recommendation, /Call 112/);
 });
 test('statutory BOCW overtime helper computes 2x rate and disputeReason is persisted', async () => {
@@ -329,7 +352,7 @@ test('end-to-end flow: Bengali worker + scaffolding task + wage dispute + clinic
   });
   assert.ok(incident.sbarHandover);
   assert.match(incident.sbarHandover.situation, /NEAR MISS/);
-  assert.ok(incident.sbarHandover.emergencySiteContact);
+  assert.equal(incident.sbarHandover.emergencySiteContact, undefined, 'Do not invent an emergency contact');
 
   // Step 4: Contractor reviews, Hospital Responder acknowledges handover
   await service.incidentAction(siteContractorSession, incident.id, 'reviewed');

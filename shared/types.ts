@@ -138,6 +138,8 @@ export interface Incident {
   siteId: string;
   reporterId: string;
   originalText: string;
+  /** Unedited speech-provider output, when the report originated from audio. */
+  rawTranscript?: string;
   sourceLanguage: Locale;
   englishTranslation: string | null;
   translations?: Partial<Record<Locale, string>>;
@@ -146,6 +148,8 @@ export interface Incident {
   urgency: Urgency;
   location: string;
   status: IncidentStatus;
+  latitude?: number;
+  longitude?: number;
   isSimulation: true;
   createdAt: string;
   updatedAt: string;

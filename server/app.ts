@@ -67,7 +67,8 @@ export function createApp(options: {
             'https://*.firebaseapp.com',
             'https://*.firebaseio.com',
             'https://securetoken.googleapis.com',
-            'https://*.supabase.co'
+            'https://*.supabase.co',
+            'https://api.bigdatacloud.net'
           ],
           imgSrc: ["'self'", 'data:', 'blob:'],
           mediaSrc: ["'self'", 'blob:', 'data:'],
@@ -86,7 +87,7 @@ export function createApp(options: {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader(
       'Permissions-Policy',
-      'camera=(), microphone=(self), geolocation=(), payment=()'
+      'camera=(), microphone=(self), geolocation=(self), payment=()'
     );
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     next();

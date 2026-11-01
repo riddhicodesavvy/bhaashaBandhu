@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { useApp } from './context';
 import { api, post } from './api';
+import { IncidentLocationField, CoordinatesDisplay } from './location-field';
+import type { Coordinates } from '../shared/location';
 import { languageNames, type Key } from './i18n';
 import {
   home,
@@ -847,8 +849,11 @@ export function ReportIncident() {
   const [category, setCategory] = useState<Category>();
   const [urgency, setUrgency] = useState<Urgency | ''>('');
   const [location, setLocation] = useState('');
+  const [coordinates, setCoordinates] = useState<Coordinates>();
+  const [locating, setLocating] = useState(false);
   const [text, setText] = useState('');
   const [transcript, setTranscript] = useState('');
+  const [rawTranscript, setRawTranscript] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState('');
   const [requestId, setRequestId] = useState(() => crypto.randomUUID());
@@ -873,7 +878,7 @@ export function ReportIncident() {
       if (result.category) setCategory(result.category);
       if (result.urgency) setUrgency(result.urgency);
       if (result.location && result.location.trim()) {
-        setLocation(result.location.trim());
+        setLocation(current => current.trim() ? current : result.location!.trim());
       }
       setText(transcript);
     } catch (e) {
@@ -885,6 +890,7 @@ export function ReportIncident() {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (busy || analyzing || locating) return;
     setBusy(true);
     setError('');
     try {
@@ -893,6 +899,8 @@ export function ReportIncident() {
         urgency,
         location: normalizeIndicText(location),
         originalText: normalizeIndicText(text),
+        ...(rawTranscript ? { rawTranscript } : {}),
+        ...(coordinates || {}),
         sourceLanguage: locale,
         requestId
       });
@@ -916,6 +924,8 @@ export function ReportIncident() {
           <CheckCircle2 size={42} aria-hidden="true" />
           <h2>{t('savedReport')}</h2>
           <p className="record-id">{saved.id}</p>
+          <p>{saved.location}</p>
+          <CoordinatesDisplay coordinates={saved} map />
           {saved.translationStatus === 'unavailable' && (
             <p className="notice">{t('translationUnavailable')}</p>
           )}
@@ -930,6 +940,7 @@ export function ReportIncident() {
             locale={locale}
             disabled={busy || analyzing}
             onText={raw => {
+              setRawTranscript(raw);
               setTranscript(raw);
               setText(raw);
             }}
@@ -1005,17 +1016,9 @@ export function ReportIncident() {
             </div>
           </fieldset>
 
-          <label>
-            {t('location')}
-            <input
-              required
-              minLength={2}
-              maxLength={300}
-              value={location}
-              onChange={e => setLocation(e.target.value)}
-              placeholder={site.data?.name}
-            />
-          </label>
+          <IncidentLocationField value={location} onChange={setLocation} coordinates={coordinates}
+            onCoordinates={setCoordinates} onBusyChange={setLocating} disabled={busy || analyzing}
+            placeholder={site.data?.name} />
 
           <label>
             {t('urgency')}
@@ -1052,7 +1055,7 @@ export function ReportIncident() {
           <button
             type="submit"
             className="button danger wide"
-            disabled={busy || analyzing}
+            disabled={busy || analyzing || locating}
             aria-label={t('submitReport')}
           >
             {busy ? t('saving') : t('submitReport')}
@@ -1129,6 +1132,7 @@ export function IncidentList() {
                 incident={i}
                 to={worker ? undefined : `${hospital ? '/hospital' : '/contractor/incidents'}/${i.id}`}
               >
+                <CoordinatesDisplay coordinates={i} map />
                 <IncidentTimeline incident={i} />
               </IncidentCard>
             ))}
@@ -1283,6 +1287,7 @@ export function IncidentDetail() {
                     {site.data?.name}
                     <br />
                     {incident.location}
+                    <CoordinatesDisplay coordinates={incident} map />
                   </dd>
                 </div>
                 <div>

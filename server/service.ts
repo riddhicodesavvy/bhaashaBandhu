@@ -448,16 +448,9 @@ export class Service {
           ? 'Immediate emergency site check. Call 112 if medical intervention required. Prepare BOCW first-aid log.'
           : 'Review site conditions, verify PPE compliance, and follow up with supervisor.',
       workerIdentity: s.uid,
-      workerTrade: input.category === 'injury' ? 'Mason / Rebar' : 'General Construction Trades',
-      injuryType: input.category === 'injury' ? 'Penetrating trauma / acute musculoskeletal injury' : input.category,
-      timeOfIncident: now,
       siteZone: input.location,
-      ppeStatus: 'Standard site PPE (Hard hat, safety vest, steel-toe boots)',
-      consciousnessState: 'Conscious, responsive',
-      bleedingStatus: input.category === 'injury' ? 'Active bleeding controlled with pressure dressing' : 'No hemorrhage observed',
-      firstAidGiven: input.category === 'injury' ? 'Wound compression and elevation, tetanus prophylaxis advised' : 'Rest, shade, hydration protocol initiated',
-      bocwInsuranceId: `BOCW-KA-BLR-${s.uid.slice(0, 8).toUpperCase()}`,
-      emergencySiteContact: '+91-98765-43210 (Site Safety Officer / Contractor Anita Demo)'
+      // Clinical observations, occurrence time, trade, insurance and contact are unknown.
+      // Never manufacture them from category, urgency or the reporter's UID.
     };
 
     const incident: Incident = {
@@ -465,11 +458,13 @@ export class Service {
       siteId: s.siteId,
       reporterId: s.uid,
       originalText: input.originalText,
+      ...(input.rawTranscript ? { rawTranscript: input.rawTranscript } : {}),
       sourceLanguage: input.sourceLanguage,
       category: input.category,
       urgency: input.urgency,
       location: input.location,
       englishTranslation,
+      ...(input.latitude !== undefined ? { latitude: input.latitude, longitude: input.longitude } : {}),
       translations,
       translationStatus: englishTranslation ? 'ready' : 'unavailable',
       status: 'reported',

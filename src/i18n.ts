@@ -1,5 +1,18 @@
 import type { Locale } from '../shared/types';
 const strings = {
+  useCurrentLocation: ['Use Current Location', 'वर्तमान स्थान इस्तेमाल करें', 'বর্তমান অবস্থান ব্যবহার করুন'],
+  gettingLocation: ['Getting your location...', 'आपका स्थान खोज रहे हैं...', 'আপনার অবস্থান খোঁজা হচ্ছে...'],
+  coordinates: ['Coordinates', 'निर्देशांक', 'স্থানাঙ্ক'],
+  viewOnMap: ['View on Map', 'नक्शे पर देखें', 'মানচিত্রে দেখুন'],
+  locationCaptured: ['Location captured. Review the location before submitting.', 'स्थान मिल गया। भेजने से पहले स्थान की जाँच करें।', 'অবস্থান পাওয়া গেছে। জমা দেওয়ার আগে অবস্থান যাচাই করুন।'],
+  locationPrivacy: ['Only captured when you tap. Coordinates are shared with BigDataCloud to find an address; it uses location/IP signals to improve its service. Saved with this report when you submit. No background tracking.', 'केवल बटन दबाने पर स्थान लिया जाता है। पता खोजने के लिए निर्देशांक BigDataCloud को भेजे जाते हैं; वह सेवा सुधारने के लिए स्थान/IP संकेत उपयोग करता है। रिपोर्ट भेजने पर स्थान सहेजा जाता है। बैकग्राउंड ट्रैकिंग नहीं होती।', 'শুধু বোতাম চাপলে অবস্থান নেওয়া হয়। ঠিকানা পেতে স্থানাঙ্ক BigDataCloud-এ পাঠানো হয়; তারা পরিষেবা উন্নত করতে অবস্থান/IP সংকেত ব্যবহার করে। রিপোর্ট জমা দিলে অবস্থান সংরক্ষিত হয়। পটভূমিতে ট্র্যাকিং হয় না।'],
+  locationDenied: ['Location permission was denied. You can enter the location manually.', 'स्थान की अनुमति नहीं मिली। आप स्थान खुद लिख सकते हैं।', 'অবস্থানের অনুমতি দেওয়া হয়নি। আপনি নিজে অবস্থান লিখতে পারেন।'],
+  locationUnavailable: ["We couldn't determine your location. Please enter it manually.", 'आपका स्थान नहीं मिल सका। कृपया स्थान खुद लिखें।', 'আপনার অবস্থান জানা যায়নি। অনুগ্রহ করে নিজে লিখুন।'],
+  locationTimeout: ['Location request timed out. Try again or enter the location manually.', 'स्थान खोजने का समय समाप्त हो गया। फिर प्रयास करें या स्थान खुद लिखें।', 'অবস্থান খোঁজার সময় শেষ হয়েছে। আবার চেষ্টা করুন বা নিজে লিখুন।'],
+  locationAddressUnavailable: ['GPS captured, but the address lookup failed. Coordinates are kept. You can edit the location manually.', 'GPS मिल गया, लेकिन पता नहीं मिला। निर्देशांक रखे गए हैं। आप स्थान खुद बदल सकते हैं।', 'GPS পাওয়া গেছে, কিন্তু ঠিকানা পাওয়া যায়নি। স্থানাঙ্ক রাখা হয়েছে। আপনি নিজে অবস্থান বদলাতে পারেন।'],
+  removeCoordinates: ['Remove GPS coordinates', 'GPS निर्देशांक हटाएं', 'GPS স্থানাঙ্ক সরান'],
+  locationSuggestion: ['Detected location — your text has been kept', 'मिला हुआ स्थान — आपका लिखा हुआ स्थान रखा गया है', 'পাওয়া অবস্থান — আপনার লেখা রাখা হয়েছে'],
+  useSuggestedLocation: ['Use detected address', 'मिला हुआ पता इस्तेमाल करें', 'পাওয়া ঠিকানা ব্যবহার করুন'],
   tagline: ['Your Language. Your Safety. Your Voice.', 'आपकी भाषा। आपकी सुरक्षा। आपकी आवाज़।', 'আপনার ভাষা। আপনার সুরক্ষা। আপনার কণ্ঠ।'],
   welcome: ['Understand work. Speak up for safety.', 'काम समझें। सुरक्षा के लिए बोलें।', 'কাজ বুঝুন। সুরক্ষার জন্য কথা বলুন।'],
   signIn: ['Sign in', 'साइन इन करें', 'সাইন ইন করুন'],

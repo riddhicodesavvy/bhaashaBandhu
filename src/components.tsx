@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useApp } from './context';
 import { api } from './api';
+import { CoordinatesDisplay } from './location-field';
 import { languageNames, type Key } from './i18n';
 import type { Incident, Locale, Site, Task } from '../shared/types';
 
@@ -269,6 +270,7 @@ export const IncidentCard = memo(function IncidentCard({
       </div>
       <h3>{t(incident.category)}</h3>
       <p>{incident.location}</p>
+      <CoordinatesDisplay coordinates={incident} />
       <p className="report-preview" lang={locale}>
         {previewText}
       </p>
@@ -306,10 +308,15 @@ export function useLoad<T>(path: string | null) {
     let alive = true;
     setLoading(true);
     setError('');
-    api<T>(path)
+    let inFlight = false;
+    const load = () => {
+      if (inFlight) return;
+      inFlight = true;
+      api<T>(path)
       .then(result => {
         if (alive) {
           setData(result);
+          setError('');
           setUpdatedAt(new Date().toISOString());
         }
       })
@@ -317,11 +324,21 @@ export function useLoad<T>(path: string | null) {
         if (alive) setError(e.message);
       })
       .finally(() => {
+        inFlight = false;
         if (alive) setLoading(false);
       });
+    };
+    load();
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') load();
+    }, 10000);
+    const onFocus = () => load();
+    window.addEventListener('focus', onFocus);
 
     return () => {
       alive = false;
+      window.clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
     };
   }, [path, revision]);
 

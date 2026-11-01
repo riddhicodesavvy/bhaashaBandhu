@@ -39,11 +39,16 @@ export const previewInput = z.object({
 
 export const incidentInput = z.object({
   originalText: sanitizedText(5, 6000),
+  rawTranscript: sanitizedText(1, 6000).optional(),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
   sourceLanguage: localeSchema,
   category: z.enum(['injury', 'hazard', 'unsafe_condition', 'near_miss', 'other']),
   urgency: z.enum(['low', 'medium', 'high', 'urgent']),
   location: sanitizedText(2, 300),
   requestId: z.uuid()
+}).refine(value => (value.latitude === undefined) === (value.longitude === undefined), {
+  message: 'Latitude and longitude must be supplied together.', path: ['latitude']
 });
 
 export const wageInput = z.object({

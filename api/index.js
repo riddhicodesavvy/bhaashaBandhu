@@ -311,7 +311,10 @@ function numberTokens(text) {
     "\u09E7\u09AE": "1",
     \u0926\u0942\u0938\u0930\u093E: "2",
     \u0926\u0942\u0938\u0930\u0940: "2",
+    \u0926\u0942\u0938\u0930\u0947: "2",
     \u0926\u094D\u0935\u093F\u0924\u0940\u092F: "2",
+    \u09A6\u09CD\u09AC\u09BF\u09A4\u09C0\u09AF\u09BC: "2",
+    \u09A6\u09CD\u09AC\u09BF\u09A4\u09C0\u09DF: "2",
     "\u09E8\u09AF\u09BC": "2",
     \u0924\u0940\u0938\u0930\u093E: "3",
     \u0924\u0940\u0938\u0930\u0940: "3",
@@ -334,7 +337,8 @@ function numberTokens(text) {
     \u0985\u09B0\u09CD\u09A7\u09C7\u0995: "0.5",
     \u0986\u09A7: "0.5"
   };
-  let normalized = text.replace(/[०-९]/g, (char) => String(char.charCodeAt(0) - 2406)).replace(/[০-৯]/g, (char) => String(char.charCodeAt(0) - 2534));
+  const englishOrdinals = { first: "1", second: "2", third: "3", fourth: "4", fifth: "5" };
+  let normalized = text.replace(/\b(first|second|third|fourth|fifth)(?=[ -]+floor\b)/gi, (word) => englishOrdinals[word.toLowerCase()]).replace(/[०-९]/g, (char) => String(char.charCodeAt(0) - 2406)).replace(/[০-৯]/g, (char) => String(char.charCodeAt(0) - 2534));
   for (const [word, digit] of Object.entries(ordinals)) {
     normalized = normalized.replaceAll(word, digit);
   }
@@ -366,6 +370,12 @@ async function groq(path, body, json) {
         `AI service could not complete this request (HTTP ${response.status}). Retry or use text.`
       );
     }
+    console.info("AI provider completed", {
+      path,
+      model: body instanceof FormData ? body.get("model") : JSON.parse(String(body)).model,
+      providerRequestId: response.headers.get("x-request-id"),
+      status: response.status
+    });
     return await response.json();
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -414,7 +424,7 @@ async function translateTask(original, source, target) {
     safetyNotes: normalizeIndicText(original.safetyNotes)
   };
   const targetName = target === "hi" ? "Hindi" : target === "bn" ? "Bengali" : "English";
-  const system = `You translate construction work instructions faithfully into ${targetName}. Return ONLY JSON with title, instructions, safetyNotes strings in target language. Preserve every number as digits (e.g. 2nd -> 2nd or 2\u0930\u0940 or \u09E8\u09AF\u09BC; 4 -> 4). Do not spell numbers out. Preserve proper names, deadlines, units, negation, and safety instructions. Do not add facts. Translate empty safetyNotes as empty string.`;
+  const system = `You translate construction work instructions faithfully into ${targetName}. Return ONLY JSON with title, instructions, safetyNotes strings in target language. Preserve every number as digits (e.g. 2nd -> 2nd or 2\u0930\u0940 or \u09E8\u09AF\u09BC; 4 -> 4). Do not spell numbers out. For ordinal floors use digits consistently in every language (second floor = 2nd floor). Preserve proper names, deadlines, units, negation, and safety instructions. Do not add facts. Translate empty safetyNotes as empty string.`;
   const result = await jsonCompletion(system, {
     original: normalizedOriginal,
     source,
@@ -454,23 +464,38 @@ async function analyzeIncident(text, sourceLanguage) {
   const system = 'You are a construction site safety intake assistant. Analyze the worker incident text. Allowed categories: "injury", "hazard", "unsafe_condition", "near_miss", "other". Allowed urgencies: "low", "medium", "high", "urgent". CRITICAL: DO NOT invent injuries, casualties, locations, or medical facts not present in the text. Preserve exact numbers, measurements, and floors. If location is not mentioned, return empty string for location. Return ONLY valid JSON with keys: category, urgency, location, summary.';
   const result = await jsonCompletion(system, { text: normalized, sourceLanguage });
   const schema = z2.object({
-    category: z2.enum(["injury", "hazard", "unsafe_condition", "near_miss", "other"]).default("other"),
-    urgency: z2.enum(["low", "medium", "high", "urgent"]).default("medium"),
-    location: z2.string().default(""),
-    summary: z2.string().default(normalized)
+    category: z2.enum(["injury", "hazard", "unsafe_condition", "near_miss", "other"]),
+    urgency: z2.enum(["low", "medium", "high", "urgent"]),
+    location: z2.string(),
+    summary: z2.string().min(1)
   });
   const parsed = schema.safeParse(result);
   if (!parsed.success) {
-    return {
-      category: "hazard",
-      urgency: "medium",
-      location: "",
-      summary: normalized
-    };
+    throw new AppError(502, "INVALID_AI_RESULT", "Incident analysis could not be validated. Retry or complete the report manually.");
   }
   return parsed.data;
 }
 async function transcribe(buffer, mime, locale) {
+  if (!buffer.length) {
+    throw new AppError(400, "NO_AUDIO", "Record a short audio clip first, or type your report.");
+  }
+  if (buffer.length >= 44 && buffer.toString("ascii", 0, 4) === "RIFF" && buffer.toString("ascii", 8, 12) === "WAVE") {
+    let pcm16 = false;
+    for (let offset = 12; offset + 8 <= buffer.length; ) {
+      const kind = buffer.toString("ascii", offset, offset + 4);
+      const size = buffer.readUInt32LE(offset + 4);
+      const end = Math.min(offset + 8 + size, buffer.length);
+      if (kind === "fmt " && size >= 16 && offset + 24 <= buffer.length) {
+        pcm16 = buffer.readUInt16LE(offset + 8) === 1 && buffer.readUInt16LE(offset + 22) === 16;
+      }
+      if (kind === "data" && pcm16) {
+        let peak = 0;
+        for (let i = offset + 8; i + 1 < end; i += 2) peak = Math.max(peak, Math.abs(buffer.readInt16LE(i)));
+        if (peak < 32) throw new AppError(422, "EMPTY_TRANSCRIPT", "No audible speech detected. Retry or type your report.");
+      }
+      offset += 8 + size + size % 2;
+    }
+  }
   const extensions = {
     "audio/webm": "webm",
     "audio/mp4": "m4a",
@@ -479,7 +504,7 @@ async function transcribe(buffer, mime, locale) {
     "audio/mpeg": "mp3"
   };
   const ext = extensions[mime] || "webm";
-  const model = process.env.GROQ_STT_MODEL || "whisper-large-v3-turbo";
+  const model = "whisper-large-v3-turbo";
   const vocabularyPrompts = {
     hi: "\u0928\u093F\u0930\u094D\u092E\u093E\u0923 \u0938\u094D\u0925\u0932 \u0938\u0941\u0930\u0915\u094D\u0937\u093E: \u0938\u0940\u0922\u093C\u093F\u092F\u094B\u0902, \u092E\u091A\u093E\u0928, \u0930\u0947\u0932\u093F\u0902\u0917, \u092E\u091C\u0926\u0942\u0930, \u091A\u094B\u091F, \u0916\u0924\u0930\u093E, \u0926\u0941\u0930\u094D\u0918\u091F\u0928\u093E\u0964",
     bn: "\u09A8\u09BF\u09B0\u09CD\u09AE\u09BE\u09A3 \u09B8\u09BE\u0987\u099F \u09A8\u09BF\u09B0\u09BE\u09AA\u09A4\u09CD\u09A4\u09BE: \u09B8\u09BF\u0981\u09A1\u09BC\u09BF, \u09AE\u09BE\u099A\u09BE, \u09B0\u09C7\u09B2\u09BF\u0982, \u09B6\u09CD\u09B0\u09AE\u09BF\u0995, \u09AA\u09A1\u09BC\u09C7 \u0997\u09C7\u099B\u09C7, \u0986\u0998\u09BE\u09A4, \u09AC\u09BF\u09AA\u09A6\u0964",
@@ -495,7 +520,7 @@ async function transcribe(buffer, mime, locale) {
         form.append("prompt", vocabularyPrompts[locale]);
       }
     }
-    form.append("response_format", "json");
+    form.append("response_format", "verbose_json");
     return groq("audio/transcriptions", form, false);
   };
   let result;
@@ -511,6 +536,9 @@ async function transcribe(buffer, mime, locale) {
         "We couldn't transcribe the recording. Please try again or type your report."
       );
     }
+  }
+  if (Array.isArray(result?.segments) && result.segments.length > 0 && result.segments.every((segment) => typeof segment.no_speech_prob === "number" && segment.no_speech_prob >= 0.6)) {
+    throw new AppError(422, "EMPTY_TRANSCRIPT", "No audible speech detected. Retry or type your report.");
   }
   const parsed = z2.object({ text: z2.string().trim().min(1).max(6e3) }).safeParse(result);
   if (!parsed.success) {
@@ -551,11 +579,17 @@ var previewInput = z3.object({
 });
 var incidentInput = z3.object({
   originalText: sanitizedText(5, 6e3),
+  rawTranscript: sanitizedText(1, 6e3).optional(),
+  latitude: z3.number().min(-90).max(90).optional(),
+  longitude: z3.number().min(-180).max(180).optional(),
   sourceLanguage: localeSchema,
   category: z3.enum(["injury", "hazard", "unsafe_condition", "near_miss", "other"]),
   urgency: z3.enum(["low", "medium", "high", "urgent"]),
   location: sanitizedText(2, 300),
   requestId: z3.uuid()
+}).refine((value) => value.latitude === void 0 === (value.longitude === void 0), {
+  message: "Latitude and longitude must be supplied together.",
+  path: ["latitude"]
 });
 var wageInput = z3.object({
   workerId: z3.string().min(1).max(128),
@@ -902,27 +936,22 @@ var Service = class {
       assessment: englishTranslation || input.originalText,
       recommendation: input.urgency === "urgent" ? "Immediate emergency site check. Call 112 if medical intervention required. Prepare BOCW first-aid log." : "Review site conditions, verify PPE compliance, and follow up with supervisor.",
       workerIdentity: s.uid,
-      workerTrade: input.category === "injury" ? "Mason / Rebar" : "General Construction Trades",
-      injuryType: input.category === "injury" ? "Penetrating trauma / acute musculoskeletal injury" : input.category,
-      timeOfIncident: now,
-      siteZone: input.location,
-      ppeStatus: "Standard site PPE (Hard hat, safety vest, steel-toe boots)",
-      consciousnessState: "Conscious, responsive",
-      bleedingStatus: input.category === "injury" ? "Active bleeding controlled with pressure dressing" : "No hemorrhage observed",
-      firstAidGiven: input.category === "injury" ? "Wound compression and elevation, tetanus prophylaxis advised" : "Rest, shade, hydration protocol initiated",
-      bocwInsuranceId: `BOCW-KA-BLR-${s.uid.slice(0, 8).toUpperCase()}`,
-      emergencySiteContact: "+91-98765-43210 (Site Safety Officer / Contractor Anita Demo)"
+      siteZone: input.location
+      // Clinical observations, occurrence time, trade, insurance and contact are unknown.
+      // Never manufacture them from category, urgency or the reporter's UID.
     };
     const incident = {
       id,
       siteId: s.siteId,
       reporterId: s.uid,
       originalText: input.originalText,
+      ...input.rawTranscript ? { rawTranscript: input.rawTranscript } : {},
       sourceLanguage: input.sourceLanguage,
       category: input.category,
       urgency: input.urgency,
       location: input.location,
       englishTranslation,
+      ...input.latitude !== void 0 ? { latitude: input.latitude, longitude: input.longitude } : {},
       translations,
       translationStatus: englishTranslation ? "ready" : "unavailable",
       status: "reported",
@@ -1117,7 +1146,8 @@ function createApp(options = {}) {
             "https://*.firebaseapp.com",
             "https://*.firebaseio.com",
             "https://securetoken.googleapis.com",
-            "https://*.supabase.co"
+            "https://*.supabase.co",
+            "https://api.bigdatacloud.net"
           ],
           imgSrc: ["'self'", "data:", "blob:"],
           mediaSrc: ["'self'", "blob:", "data:"],
@@ -1134,7 +1164,7 @@ function createApp(options = {}) {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader(
       "Permissions-Policy",
-      "camera=(), microphone=(self), geolocation=(), payment=()"
+      "camera=(), microphone=(self), geolocation=(self), payment=()"
     );
     res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
     next();
