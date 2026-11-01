@@ -29,7 +29,7 @@ FINAL ACCEPTANCE VERDICT:
 
 ## Critical Failures
 
-The canonical Vercel alias `https://bhaasha-bandhu.vercel.app` currently resolves to production deployment `bhaasha-bandhu-i1tenrcoh-ridcyber.vercel.app`, commit `8a01b61209664cf9b5f1b9bdeb72bd1577dccbf3`, branch `codex/incident-gps-autofill`. The local working tree is on the same branch at `f829afcbebc90e724f74056a8578a94e6d842c3a` with uncommitted hardening changes, so the deployed application does not include this review’s changes. No final CI run or deployment for these changes is available.
+The canonical Vercel alias `https://bhaasha-bandhu.vercel.app` currently resolves to production deployment `bhaasha-bandhu-i1tenrcoh-ridcyber.vercel.app`, commit `8a01b61209664cf9b5f1b9bdeb72bd1577dccbf3`, branch `codex/incident-gps-autofill`. The reviewed changes are committed as `0ef36fa0ad13dfe741f0d68f2da53409712e4dd7` on `codex/incident-gps-autofill` and pushed. Vercel preview deployment `bhaasha-bandhu-o9g1quj6a-ridcyber.vercel.app` for that exact commit reached READY. The canonical production alias still serves the older commit. CI status could not be retrieved in this environment.
 
 The mandatory fresh-session production journey (three role logins, task lifecycle, incident submission and persistence, logout/login, and cross-role access checks) was not performed. The live application could not be inspected in the browser environment. No synthetic acceptance records were created. No production persistence, propagation, AI quality, or rate-limit behavior is claimed as passing.
 
@@ -41,7 +41,7 @@ Physical GPS and microphone behavior require device testing. Bengali STT accurac
 
 ## Verified Production Numbers
 
-Vercel deployment state: `READY` for the existing production deployment. Current deployed commit: `8a01b61209664cf9b5f1b9bdeb72bd1577dccbf3`. Local test suite: 32 passed, 0 failed, 0 skipped. Local Vite build: successful; largest emitted JavaScript chunk was 397.26 kB (119.54 kB gzip). These are local build/test measurements, not production runtime benchmarks.
+Vercel canonical production deployment state: `READY`, commit `8a01b61209664cf9b5f1b9bdeb72bd1577dccbf3`. Preview for reviewed commit `0ef36fa0ad13dfe741f0d68f2da53409712e4dd7`: `READY`. Local test suite: 32 passed, 0 failed, 0 skipped. Local Vite build: successful; largest emitted JavaScript chunk was 397.26 kB (119.54 kB gzip). These are local build/test measurements, not production runtime benchmarks.
 
 ## Resume-Safe Claims
 
