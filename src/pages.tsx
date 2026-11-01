@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useApp } from './context';
 import { api, post } from './api';
-import { IncidentLocationField, CoordinatesDisplay } from './location-field';
+import { IncidentLocationField, CoordinatesDisplay, IncidentMapLink } from './location-field';
 import type { Coordinates } from '../shared/location';
 import { languageNames, type Key } from './i18n';
 import {
@@ -1132,7 +1132,7 @@ export function IncidentList() {
                 incident={i}
                 to={worker ? undefined : `${hospital ? '/hospital' : '/contractor/incidents'}/${i.id}`}
               >
-                <CoordinatesDisplay coordinates={i} map />
+                <IncidentMapLink coordinates={i} />
                 <IncidentTimeline incident={i} />
               </IncidentCard>
             ))}

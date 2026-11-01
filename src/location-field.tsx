@@ -4,12 +4,18 @@ import { useApp } from './context';
 import { captureCoordinates, LocationError, reverseGeocode } from './location';
 import { coordinateText, incidentMapUrl, validCoordinates, type Coordinates } from '../shared/location';
 
+export function IncidentMapLink({ coordinates }: { coordinates: unknown }) {
+  const { t } = useApp();
+  if (!validCoordinates(coordinates)) return null;
+  return <a className="incident-map-link" href={incidentMapUrl(coordinates)} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{t('viewOnMap')}</a>;
+}
+
 export function CoordinatesDisplay({ coordinates, map = false }: { coordinates: unknown; map?: boolean }) {
   const { t } = useApp();
   if (!validCoordinates(coordinates)) return null;
   return <span className="incident-coordinates">
     <span>{t('coordinates')}: {coordinateText(coordinates)}</span>
-    {map && <a href={incidentMapUrl(coordinates)} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{t('viewOnMap')}</a>}
+    {map && <IncidentMapLink coordinates={coordinates} />}
   </span>;
 }
 
