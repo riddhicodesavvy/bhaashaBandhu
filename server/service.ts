@@ -1,6 +1,6 @@
 import { randomUUID, createHmac, timingSafeEqual } from 'node:crypto';
 import { AppError, ensure } from './errors';
-import { translateIncident, translateTask } from './ai';
+import { translateIncident, translateTask, analyzeIncident } from './ai';
 import type {
   Store,
   Session,
@@ -38,10 +38,26 @@ export const taskKey = (id: string): string => `task:${id}`;
  * optimistic concurrency control (CAS), and Indic language construction workflows.
  */
 export class Service {
+  public ai: {
+    translateTask: typeof translateTask;
+    translateIncident: typeof translateIncident;
+    analyzeIncident: typeof analyzeIncident;
+  };
+
   constructor(
     public store: Store,
-    public ai = { translateTask, translateIncident }
-  ) {}
+    ai?: {
+      translateTask: typeof translateTask;
+      translateIncident: typeof translateIncident;
+      analyzeIncident?: typeof analyzeIncident;
+    }
+  ) {
+    this.ai = {
+      translateTask: ai?.translateTask || translateTask,
+      translateIncident: ai?.translateIncident || translateIncident,
+      analyzeIncident: ai?.analyzeIncident || analyzeIncident
+    };
+  }
 
   /**
    * Asserts that the authenticated session possesses one of the allowed roles.
@@ -372,6 +388,15 @@ export class Service {
       s.role === 'worker'
     );
     return envelope.payload;
+  }
+
+  /**
+   * Fast text-only analysis of worker-confirmed incident transcript.
+   * Classifies category and urgency and extracts location without hallucinating.
+   */
+  async analyzeIncident(s: Session, text: string, sourceLanguage: Locale) {
+    this.allow(s, 'worker');
+    return this.ai.analyzeIncident(text, sourceLanguage);
   }
 
   /**

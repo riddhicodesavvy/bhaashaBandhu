@@ -449,6 +449,27 @@ async function translateIncident(originalText, source, target = "en") {
   }
   return parsed.data.translatedText;
 }
+async function analyzeIncident(text, sourceLanguage) {
+  const normalized = normalizeIndicText(text);
+  const system = 'You are a construction site safety intake assistant. Analyze the worker incident text. Allowed categories: "injury", "hazard", "unsafe_condition", "near_miss", "other". Allowed urgencies: "low", "medium", "high", "urgent". CRITICAL: DO NOT invent injuries, casualties, locations, or medical facts not present in the text. Preserve exact numbers, measurements, and floors. If location is not mentioned, return empty string for location. Return ONLY valid JSON with keys: category, urgency, location, summary.';
+  const result = await jsonCompletion(system, { text: normalized, sourceLanguage });
+  const schema = z2.object({
+    category: z2.enum(["injury", "hazard", "unsafe_condition", "near_miss", "other"]).default("other"),
+    urgency: z2.enum(["low", "medium", "high", "urgent"]).default("medium"),
+    location: z2.string().default(""),
+    summary: z2.string().default(normalized)
+  });
+  const parsed = schema.safeParse(result);
+  if (!parsed.success) {
+    return {
+      category: "hazard",
+      urgency: "medium",
+      location: "",
+      summary: normalized
+    };
+  }
+  return parsed.data;
+}
 async function transcribe(buffer, mime, locale) {
   const extensions = {
     "audio/webm": "webm",
@@ -457,15 +478,47 @@ async function transcribe(buffer, mime, locale) {
     "audio/wav": "wav",
     "audio/mpeg": "mp3"
   };
-  const form = new FormData();
-  form.append("file", new Blob([new Uint8Array(buffer)], { type: mime }), `recording.${extensions[mime]}`);
-  form.append("model", process.env.GROQ_STT_MODEL || "whisper-large-v3");
-  form.append("language", locale);
-  form.append("response_format", "json");
-  const result = await groq("audio/transcriptions", form, false);
+  const ext = extensions[mime] || "webm";
+  const model = process.env.GROQ_STT_MODEL || "whisper-large-v3-turbo";
+  const vocabularyPrompts = {
+    hi: "\u0928\u093F\u0930\u094D\u092E\u093E\u0923 \u0938\u094D\u0925\u0932 \u0938\u0941\u0930\u0915\u094D\u0937\u093E: \u0938\u0940\u0922\u093C\u093F\u092F\u094B\u0902, \u092E\u091A\u093E\u0928, \u0930\u0947\u0932\u093F\u0902\u0917, \u092E\u091C\u0926\u0942\u0930, \u091A\u094B\u091F, \u0916\u0924\u0930\u093E, \u0926\u0941\u0930\u094D\u0918\u091F\u0928\u093E\u0964",
+    bn: "\u09A8\u09BF\u09B0\u09CD\u09AE\u09BE\u09A3 \u09B8\u09BE\u0987\u099F \u09A8\u09BF\u09B0\u09BE\u09AA\u09A4\u09CD\u09A4\u09BE: \u09B8\u09BF\u0981\u09A1\u09BC\u09BF, \u09AE\u09BE\u099A\u09BE, \u09B0\u09C7\u09B2\u09BF\u0982, \u09B6\u09CD\u09B0\u09AE\u09BF\u0995, \u09AA\u09A1\u09BC\u09C7 \u0997\u09C7\u099B\u09C7, \u0986\u0998\u09BE\u09A4, \u09AC\u09BF\u09AA\u09A6\u0964",
+    en: "Construction site safety: scaffolding, railing, electrical panel, hazard, worker incident."
+  };
+  const executeTranscription = async () => {
+    const form = new FormData();
+    form.append("file", new Blob([new Uint8Array(buffer)], { type: mime }), `recording.${ext}`);
+    form.append("model", model);
+    if (locale && ["en", "hi", "bn"].includes(locale)) {
+      form.append("language", locale);
+      if (vocabularyPrompts[locale]) {
+        form.append("prompt", vocabularyPrompts[locale]);
+      }
+    }
+    form.append("response_format", "json");
+    return groq("audio/transcriptions", form, false);
+  };
+  let result;
+  try {
+    result = await executeTranscription();
+  } catch {
+    try {
+      result = await executeTranscription();
+    } catch {
+      throw new AppError(
+        502,
+        "STT_FAILED",
+        "We couldn't transcribe the recording. Please try again or type your report."
+      );
+    }
+  }
   const parsed = z2.object({ text: z2.string().trim().min(1).max(6e3) }).safeParse(result);
   if (!parsed.success) {
-    throw new AppError(502, "EMPTY_TRANSCRIPT", "No usable speech was returned. Retry or type instead.");
+    throw new AppError(
+      502,
+      "EMPTY_TRANSCRIPT",
+      "We couldn't transcribe the recording. Please try again or type your report."
+    );
   }
   return normalizeIndicText(parsed.data.text);
 }
@@ -530,9 +583,13 @@ var sign = (data) => {
 };
 var taskKey = (id) => `task:${id}`;
 var Service = class {
-  constructor(store, ai = { translateTask, translateIncident }) {
+  constructor(store, ai) {
     this.store = store;
-    this.ai = ai;
+    this.ai = {
+      translateTask: ai?.translateTask || translateTask,
+      translateIncident: ai?.translateIncident || translateIncident,
+      analyzeIncident: ai?.analyzeIncident || analyzeIncident
+    };
   }
   store;
   ai;
@@ -800,6 +857,14 @@ var Service = class {
       s.role === "worker"
     );
     return envelope.payload;
+  }
+  /**
+   * Fast text-only analysis of worker-confirmed incident transcript.
+   * Classifies category and urgency and extracts location without hallucinating.
+   */
+  async analyzeIncident(s, text, sourceLanguage) {
+    this.allow(s, "worker");
+    return this.ai.analyzeIncident(text, sourceLanguage);
   }
   /**
    * Creates an incident report with clinical SBAR emergency handover protocol data.
@@ -1176,6 +1241,16 @@ function createApp(options = {}) {
       ok(res, await service.createIncident(req.session, req.body), 201);
     }
   );
+  app2.post(
+    "/api/incidents/analyze",
+    rateLimit({ windowMs: 6e4, limit: 20, keyGenerator: (req) => req.session.uid }),
+    async (req, res) => {
+      const text = typeof req.body.text === "string" ? req.body.text.trim() : "";
+      ensure(text.length >= 2, 400, "INVALID_TEXT", "Provide incident text to analyze.");
+      const lang = req.body.language && ["en", "hi", "bn"].includes(req.body.language) ? req.body.language : "en";
+      ok(res, await service.analyzeIncident(req.session, text, lang));
+    }
+  );
   app2.get("/api/incidents/:id", async (req, res) => {
     ok(res, await service.incident(req.session, String(req.params.id)));
   });
@@ -1221,34 +1296,46 @@ function createApp(options = {}) {
   });
   const parseAudio = (req, res, next) => {
     const rawBody = req.rawBody;
+    const uploadMulti = upload.fields([
+      { name: "audio", maxCount: 1 },
+      { name: "file", maxCount: 1 }
+    ]);
+    const normalizeFile = (r) => {
+      if (!r.file) {
+        const files = r.files;
+        r.file = files?.audio?.[0] || files?.file?.[0];
+      }
+    };
     if (!rawBody || !req.is("multipart/form-data")) {
-      return upload.single("audio")(req, res, next);
+      return uploadMulti(req, res, (err) => {
+        if (!err) normalizeFile(req);
+        next(err);
+      });
     }
     const replay = Readable.from([rawBody]);
     replay.headers = req.headers;
     replay.method = req.method;
-    upload.single("audio")(replay, res, (error) => {
+    uploadMulti(replay, res, (error) => {
       req.body = replay.body;
+      normalizeFile(replay);
       req.file = replay.file;
       next(error);
     });
   };
-  app2.post(
-    "/api/audio/transcribe",
-    rateLimit({ windowMs: 6e4, limit: 12, keyGenerator: (req) => req.session.uid }),
-    (req, _res, next) => {
-      service.allow(req.session, "worker", "contractor");
-      next();
-    },
-    parseAudio,
-    async (req, res) => {
-      ensure(req.file, 400, "NO_AUDIO", "Record a short audio clip first.");
-      const lang = localeSchema.parse(req.body.language);
-      ok(res, {
-        text: await transcribe(req.file.buffer, req.file.mimetype.split(";")[0], lang)
-      });
-    }
-  );
+  const transcribeHandler = async (req, res) => {
+    ensure(req.file, 400, "NO_AUDIO", "Record a short audio clip first.");
+    const lang = req.body.language ? localeSchema.safeParse(req.body.language).data : void 0;
+    ok(res, {
+      text: await transcribe(req.file.buffer, req.file.mimetype.split(";")[0], lang)
+    });
+  };
+  const transcribeRateLimit = rateLimit({ windowMs: 6e4, limit: 30, keyGenerator: (req) => req.session.uid });
+  const transcribeRoleGuard = (req, _res, next) => {
+    service.allow(req.session, "worker", "contractor", "hospital_responder");
+    next();
+  };
+  app2.post("/api/transcribe", transcribeRateLimit, transcribeRoleGuard, parseAudio, transcribeHandler);
+  app2.post("/api/audio/transcribe", transcribeRateLimit, transcribeRoleGuard, parseAudio, transcribeHandler);
   app2.use("/api", (_req, res) => {
     res.status(404).json({
       data: null,

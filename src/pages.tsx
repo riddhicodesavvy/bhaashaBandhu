@@ -13,7 +13,8 @@ import {
   ShieldCheck,
   ClipboardCheck,
   Wallet,
-  Plus
+  Plus,
+  Sparkles
 } from 'lucide-react';
 import { useApp } from './context';
 import { api, post } from './api';
@@ -847,10 +848,40 @@ export function ReportIncident() {
   const [urgency, setUrgency] = useState<Urgency | ''>('');
   const [location, setLocation] = useState('');
   const [text, setText] = useState('');
+  const [transcript, setTranscript] = useState('');
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState('');
   const [requestId, setRequestId] = useState(() => crypto.randomUUID());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState<Incident>();
+
+  async function handleAnalyze() {
+    if (!transcript.trim()) return;
+    setAnalyzing(true);
+    setAnalysisError('');
+    try {
+      const result = await post<{
+        category: Category;
+        urgency: Urgency;
+        location?: string;
+        summary?: string;
+      }>('/incidents/analyze', {
+        text: normalizeIndicText(transcript),
+        language: locale
+      });
+      if (result.category) setCategory(result.category);
+      if (result.urgency) setUrgency(result.urgency);
+      if (result.location && result.location.trim()) {
+        setLocation(result.location.trim());
+      }
+      setText(transcript);
+    } catch (e) {
+      setAnalysisError((e as Error).message || t('transcriptionFailed'));
+    } finally {
+      setAnalyzing(false);
+    }
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -895,6 +926,60 @@ export function ReportIncident() {
         </section>
       ) : (
         <form className="card form-card stack" onSubmit={submit}>
+          <SpeechRecorder
+            locale={locale}
+            disabled={busy || analyzing}
+            onText={raw => {
+              setTranscript(raw);
+              setText(raw);
+            }}
+          />
+
+          {transcript && (
+            <div className="card transcript-box" style={{ background: '#f8fafc', border: '1px solid #cbd5e1', padding: '14px', borderRadius: '10px' }}>
+              <label>
+                <strong>{t('whatWeHeard')}</strong>
+                <small className="helper" style={{ display: 'block', marginTop: 4 }}>
+                  {t('editTranscriptHelp')}
+                </small>
+                <textarea
+                  rows={3}
+                  value={transcript}
+                  onChange={e => {
+                    setTranscript(e.target.value);
+                    setText(e.target.value);
+                  }}
+                  style={{ marginTop: 8 }}
+                />
+              </label>
+
+              <div className="button-row" style={{ marginTop: 10, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="button"
+                  disabled={analyzing || !transcript.trim()}
+                  onClick={handleAnalyze}
+                >
+                  <Sparkles size={16} aria-hidden="true" />
+                  {analyzing ? t('analyzing') : t('confirmAndAnalyze')}
+                </button>
+                <button
+                  type="button"
+                  className="button secondary"
+                  onClick={() => setTranscript('')}
+                >
+                  {t('recordAgain')}
+                </button>
+              </div>
+
+              {analysisError && (
+                <div style={{ marginTop: 10 }}>
+                  <ErrorBox message={analysisError} retry={handleAnalyze} />
+                </div>
+              )}
+            </div>
+          )}
+
           <fieldset>
             <legend>{t('whatHappened')}</legend>
             <div className="category-grid">
@@ -949,12 +1034,6 @@ export function ReportIncident() {
             <small className="helper">{t('urgencyHelp')}</small>
           </label>
 
-          <SpeechRecorder
-            locale={locale}
-            disabled={busy}
-            onText={transcript => setText(old => `${old}${old ? '\n' : ''}${transcript}`)}
-          />
-
           <label>
             {t('description')}
             <textarea
@@ -973,7 +1052,7 @@ export function ReportIncident() {
           <button
             type="submit"
             className="button danger wide"
-            disabled={busy}
+            disabled={busy || analyzing}
             aria-label={t('submitReport')}
           >
             {busy ? t('saving') : t('submitReport')}

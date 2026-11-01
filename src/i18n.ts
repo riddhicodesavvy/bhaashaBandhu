@@ -71,6 +71,16 @@ const strings = {
   offline: ['You are offline. Changes cannot be saved.', 'इंटरनेट नहीं है। बदलाव सहेजे नहीं जा सकते।', 'ইন্টারনেট নেই। পরিবর্তন সংরক্ষণ করা যাবে না।'],
   invalidLogin: ['Unable to sign in. Check email and password, or try again later.', 'साइन इन नहीं हुआ। ईमेल और पासवर्ड जांचें या फिर कोशिश करें।', 'সাইন ইন হয়নি। ইমেল ও পাসওয়ার্ড যাচাই করুন বা পরে চেষ্টা করুন।'],
   notFound: ['Page not found', 'पृष्ठ नहीं मिला', 'পৃষ্ঠা পাওয়া যায়নি'], sessionError: ['Your workspace could not be loaded.', 'आपका कार्यक्षेत्र नहीं खुला।', 'আপনার কাজের জায়গা খোলা যায়নি।'],
+  whatWeHeard: ['What we heard', 'हमने जो सुना', 'আমরা যা শুনেছি'],
+  editTranscriptHelp: ['Review and edit the transcript before confirming with AI.', 'AI से पुष्टि करने से पहले पाठ की जांच और संपादन करें।', 'AI দিয়ে নিশ্চিত করার আগে লেখাটি যাচাই ও সংশোধন করুন।'],
+  confirmAndAnalyze: ['Confirm & Analyze', 'पुष्टि करें और विश्लेषण करें', 'নিশ্চিত করুন ও বিশ্লেষণ করুন'],
+  analyzing: ['Analyzing incident…', 'घटना का विश्लेषण हो रहा है…', 'ঘটনা বিশ্লেষণ করা হচ্ছে…'],
+  retryAnalysis: ['Retry analysis', 'विश्लेषण फिर से करें', 'আবার বিশ্লেষণ করুন'],
+  recordAgain: ['Record again', 'फिर से रिकॉर्ड करें', 'আবার রেকর্ড করুন'],
+  transcriptionFailed: ["We couldn't transcribe the recording. Please try again or type your report.", 'हम रिकॉर्डिंग को समझ नहीं सके। कृपया पुनः प्रयास करें या लिखकर बताएं।', 'আমরা রেকর্ডিংটি রূপান্তর করতে পারিনি। অনুগ্রহ করে আবার চেষ্টা করুন বা লিখে জানান।'],
+  micUnavailable: ['Microphone unavailable. Type instead.', 'माइक्रोफ़ोन उपलब्ध नहीं है। लिखकर बताएं।', 'মাইক্রোফোন পাওয়া যায়নি। লিখে জানান।'],
+  networkError: ['Network error. Please retry.', 'नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।', 'নেটওয়ার্ক ত্রুটি। অনুগ্রহ করে আবার চেষ্টা করুন।'],
+  structuredPreview: ['Structured incident preview', 'संरचित रिपोर्ट पूर्वावलोकन', 'বিন্যস্ত রিপোর্ট পূর্বরূপ']
 } as const;
 export type Key = keyof typeof strings;
 export const languageNames: Record<Locale, string> = { en: 'English', hi: 'हिन्दी', bn: 'বাংলা' };

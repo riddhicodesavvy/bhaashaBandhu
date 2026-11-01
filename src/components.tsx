@@ -520,13 +520,21 @@ export function SpeechRecorder({
         form.append('audio', new Blob(chunks, { type: finalType }), 'recording');
         form.append('language', locale);
         try {
-          const result = await api<{ text: string }>('/audio/transcribe', {
-            method: 'POST',
-            body: form
-          });
-          if (mounted.current) onText(result.text);
-        } catch (e) {
-          if (mounted.current) setError((e as Error).message);
+          let result: { text: string } | undefined;
+          try {
+            result = await api<{ text: string }>('/transcribe', {
+              method: 'POST',
+              body: form
+            });
+          } catch {
+            result = await api<{ text: string }>('/audio/transcribe', {
+              method: 'POST',
+              body: form
+            });
+          }
+          if (mounted.current && result?.text) onText(result.text);
+        } catch {
+          if (mounted.current) setError(t('transcriptionFailed'));
         } finally {
           if (mounted.current) setState('idle');
         }
@@ -537,7 +545,7 @@ export function SpeechRecorder({
         cleanup();
         if (mounted.current) {
           setState('idle');
-          setError(t('micDenied'));
+          setError(t('transcriptionFailed'));
         }
       };
 
@@ -638,7 +646,7 @@ export function SpeechRecorder({
       </div>
 
       <p className="helper">{t('micHelp')}</p>
-      {error && <ErrorBox message={error} />}
+      {error && <ErrorBox message={error} retry={start} />}
     </div>
   );
 }

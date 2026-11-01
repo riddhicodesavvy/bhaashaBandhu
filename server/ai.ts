@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { AppError } from './errors';
-import type { Locale, Translation } from '../shared/types';
+import type { Locale, Translation, Category, Urgency } from '../shared/types';
 import { normalizeIndicText } from '../shared/types';
 
 const translated = z.object({
@@ -191,7 +191,50 @@ export async function translateIncident(
   return parsed.data.translatedText;
 }
 
-export async function transcribe(buffer: Buffer, mime: string, locale: Locale): Promise<string> {
+export async function analyzeIncident(
+  text: string,
+  sourceLanguage: Locale
+): Promise<{
+  category: Category;
+  urgency: Urgency;
+  location: string;
+  summary: string;
+}> {
+  const normalized = normalizeIndicText(text);
+  const system =
+    'You are a construction site safety intake assistant. Analyze the worker incident text. ' +
+    'Allowed categories: "injury", "hazard", "unsafe_condition", "near_miss", "other". ' +
+    'Allowed urgencies: "low", "medium", "high", "urgent". ' +
+    'CRITICAL: DO NOT invent injuries, casualties, locations, or medical facts not present in the text. ' +
+    'Preserve exact numbers, measurements, and floors. ' +
+    'If location is not mentioned, return empty string for location. ' +
+    'Return ONLY valid JSON with keys: category, urgency, location, summary.';
+
+  const result = await jsonCompletion(system, { text: normalized, sourceLanguage });
+  const schema = z.object({
+    category: z.enum(['injury', 'hazard', 'unsafe_condition', 'near_miss', 'other']).default('other'),
+    urgency: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
+    location: z.string().default(''),
+    summary: z.string().default(normalized)
+  });
+
+  const parsed = schema.safeParse(result);
+  if (!parsed.success) {
+    return {
+      category: 'hazard',
+      urgency: 'medium',
+      location: '',
+      summary: normalized
+    };
+  }
+  return parsed.data;
+}
+
+export async function transcribe(
+  buffer: Buffer,
+  mime: string,
+  locale?: Locale
+): Promise<string> {
   const extensions: Record<string, string> = {
     'audio/webm': 'webm',
     'audio/mp4': 'm4a',
@@ -200,16 +243,53 @@ export async function transcribe(buffer: Buffer, mime: string, locale: Locale): 
     'audio/mpeg': 'mp3'
   };
 
-  const form = new FormData();
-  form.append('file', new Blob([new Uint8Array(buffer)], { type: mime }), `recording.${extensions[mime]}`);
-  form.append('model', process.env.GROQ_STT_MODEL || 'whisper-large-v3');
-  form.append('language', locale);
-  form.append('response_format', 'json');
+  const ext = extensions[mime] || 'webm';
+  const model = process.env.GROQ_STT_MODEL || 'whisper-large-v3-turbo';
 
-  const result = await groq('audio/transcriptions', form, false);
+  // Short domain-specific vocabulary prompts per locale to optimize accuracy without hallucinating
+  const vocabularyPrompts: Record<string, string> = {
+    hi: 'निर्माण स्थल सुरक्षा: सीढ़ियों, मचान, रेलिंग, मजदूर, चोट, खतरा, दुर्घटना।',
+    bn: 'নির্মাণ সাইট নিরাপত্তা: সিঁড়ি, মাচা, রেলিং, শ্রমিক, পড়ে গেছে, আঘাত, বিপদ।',
+    en: 'Construction site safety: scaffolding, railing, electrical panel, hazard, worker incident.'
+  };
+
+  const executeTranscription = async () => {
+    const form = new FormData();
+    form.append('file', new Blob([new Uint8Array(buffer)], { type: mime }), `recording.${ext}`);
+    form.append('model', model);
+    if (locale && ['en', 'hi', 'bn'].includes(locale)) {
+      form.append('language', locale);
+      if (vocabularyPrompts[locale]) {
+        form.append('prompt', vocabularyPrompts[locale]);
+      }
+    }
+    form.append('response_format', 'json');
+    return groq('audio/transcriptions', form, false);
+  };
+
+  let result;
+  try {
+    result = await executeTranscription();
+  } catch {
+    // Retry Turbo once on temporary error before falling back
+    try {
+      result = await executeTranscription();
+    } catch {
+      throw new AppError(
+        502,
+        'STT_FAILED',
+        "We couldn't transcribe the recording. Please try again or type your report."
+      );
+    }
+  }
+
   const parsed = z.object({ text: z.string().trim().min(1).max(6000) }).safeParse(result);
   if (!parsed.success) {
-    throw new AppError(502, 'EMPTY_TRANSCRIPT', 'No usable speech was returned. Retry or type instead.');
+    throw new AppError(
+      502,
+      'EMPTY_TRANSCRIPT',
+      "We couldn't transcribe the recording. Please try again or type your report."
+    );
   }
 
   return normalizeIndicText(parsed.data.text);

@@ -222,6 +222,19 @@ export function createApp(options: {
     }
   );
 
+  app.post(
+    '/api/incidents/analyze',
+    rateLimit({ windowMs: 60000, limit: 20, keyGenerator: req => req.session.uid }),
+    async (req, res) => {
+      const text = typeof req.body.text === 'string' ? req.body.text.trim() : '';
+      ensure(text.length >= 2, 400, 'INVALID_TEXT', 'Provide incident text to analyze.');
+      const lang = req.body.language && ['en', 'hi', 'bn'].includes(req.body.language)
+        ? (req.body.language as 'en' | 'hi' | 'bn')
+        : 'en';
+      ok(res, await service.analyzeIncident(req.session, text, lang));
+    }
+  );
+
   app.get('/api/incidents/:id', async (req, res) => {
     ok(res, await service.incident(req.session, String(req.params.id)));
   });
@@ -277,35 +290,51 @@ export function createApp(options: {
 
   const parseAudio: express.RequestHandler = (req, res, next) => {
     const rawBody = (req as express.Request & { rawBody?: Buffer }).rawBody;
+    const uploadMulti = upload.fields([
+      { name: 'audio', maxCount: 1 },
+      { name: 'file', maxCount: 1 }
+    ]);
+
+    const normalizeFile = (r: express.Request) => {
+      if (!r.file) {
+        const files = r.files as Record<string, Express.Multer.File[]> | undefined;
+        r.file = files?.audio?.[0] || files?.file?.[0];
+      }
+    };
+
     if (!rawBody || !req.is('multipart/form-data')) {
-      return upload.single('audio')(req, res, next);
+      return uploadMulti(req, res, err => {
+        if (!err) normalizeFile(req);
+        next(err);
+      });
     }
     const replay = Readable.from([rawBody]) as unknown as express.Request;
     replay.headers = req.headers;
     replay.method = req.method;
-    upload.single('audio')(replay, res, error => {
+    uploadMulti(replay, res, error => {
       req.body = replay.body;
+      normalizeFile(replay);
       req.file = replay.file;
       next(error);
     });
   };
 
-  app.post(
-    '/api/audio/transcribe',
-    rateLimit({ windowMs: 60000, limit: 12, keyGenerator: req => req.session.uid }),
-    (req, _res, next) => {
-      service.allow(req.session, 'worker', 'contractor');
-      next();
-    },
-    parseAudio,
-    async (req, res) => {
-      ensure(req.file, 400, 'NO_AUDIO', 'Record a short audio clip first.');
-      const lang = localeSchema.parse(req.body.language);
-      ok(res, {
-        text: await transcribe(req.file.buffer, req.file.mimetype.split(';')[0], lang)
-      });
-    }
-  );
+  const transcribeHandler: express.RequestHandler = async (req, res) => {
+    ensure(req.file, 400, 'NO_AUDIO', 'Record a short audio clip first.');
+    const lang = req.body.language ? localeSchema.safeParse(req.body.language).data : undefined;
+    ok(res, {
+      text: await transcribe(req.file.buffer, req.file.mimetype.split(';')[0], lang)
+    });
+  };
+
+  const transcribeRateLimit = rateLimit({ windowMs: 60000, limit: 30, keyGenerator: req => req.session.uid });
+  const transcribeRoleGuard: express.RequestHandler = (req, _res, next) => {
+    service.allow(req.session, 'worker', 'contractor', 'hospital_responder');
+    next();
+  };
+
+  app.post('/api/transcribe', transcribeRateLimit, transcribeRoleGuard, parseAudio, transcribeHandler);
+  app.post('/api/audio/transcribe', transcribeRateLimit, transcribeRoleGuard, parseAudio, transcribeHandler);
 
   // 404 handler for API routes
   app.use('/api', (_req, res) => {
