@@ -14,7 +14,10 @@ export function adminApp() {
 }
 export async function verifyIdentity(token: string): Promise<{ uid: string }> {
   let claims;
-  try { claims = await getAuth(adminApp()).verifyIdToken(token, process.env.FIREBASE_CHECK_REVOKED === 'true'); }
+  // Privileged deployments always check revoked/disabled accounts. Public-certificate
+  // gateway deployments cannot query Admin account state; that limitation is explicit.
+  const checkRevoked = !!(process.env.FIREBASE_ADMIN_CREDENTIALS_JSON || process.env.GOOGLE_APPLICATION_CREDENTIALS) || process.env.FIREBASE_CHECK_REVOKED === 'true';
+  try { claims = await getAuth(adminApp()).verifyIdToken(token, checkRevoked); }
   catch { throw new AppError(401, 'INVALID_TOKEN', 'Your session could not be verified. Sign in again.'); }
   return { uid: claims.uid };
 }

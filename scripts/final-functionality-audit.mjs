@@ -56,13 +56,13 @@ async function run() {
   pass('Firebase config', `apiKey present, project=${cfg.data.firebase.projectId}`);
 
   // --- Auth all 3 roles ---
-  const wAuth = await signIn(apiKey, 'worker@bhashabandhu.demo', 'Worker@123');
+  const wAuth = await signIn(apiKey, 'worker@bhashabandhu.demo', process.env.DEMO_WORKER_PASSWORD);
   pass('Worker login', `uid=${wAuth.localId}`);
 
-  const cAuth = await signIn(apiKey, 'contractor@bhashabandhu.demo', 'Contractor@123');
+  const cAuth = await signIn(apiKey, 'contractor@bhashabandhu.demo', process.env.DEMO_CONTRACTOR_PASSWORD);
   pass('Contractor login', `uid=${cAuth.localId}`);
 
-  const hAuth = await signIn(apiKey, 'hospital@bhashabandhu.demo', 'Hospital@123');
+  const hAuth = await signIn(apiKey, 'hospital@bhashabandhu.demo', process.env.DEMO_HOSPITAL_PASSWORD);
   pass('Hospital login', `uid=${hAuth.localId}`);
 
   // --- Profile verification (database role) ---

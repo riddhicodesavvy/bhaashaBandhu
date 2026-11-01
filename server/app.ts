@@ -13,6 +13,7 @@ import { transcribe } from './ai';
 import { localeSchema } from './validation';
 import type { Session, ApiResponse } from '../shared/types';
 import { requestIdentity } from './request-context';
+import type { RateOperation } from '../supabase/functions/bb-data/rate-policy';
 
 declare global {
   namespace Express {
@@ -42,10 +43,19 @@ function isAllowedOrigin(origin: string, hostHeader?: string): boolean {
 export function createApp(options: {
   service?: Service;
   verify?: (token: string) => Promise<Session>;
+  consumeLimit?: (uid: string, operation: RateOperation) => Promise<boolean>;
 } = {}) {
   const app = express();
   const service = options.service || new Service(new SupabaseStore());
   const verify = options.verify || createSessionVerifier(service.store);
+  const consumeLimit = options.consumeLimit || ((uid, operation) => new SupabaseStore().consumeLimit(uid, operation));
+  const sharedLimit = (operation: RateOperation): express.RequestHandler => async (req, res, next) => {
+    if (!await consumeLimit(req.session.uid, operation)) {
+      res.setHeader('Retry-After', '60');
+      throw new AppError(429, 'RATE_LIMIT', 'Too many requests. Try again in a minute.');
+    }
+    next();
+  };
 
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
@@ -190,13 +200,13 @@ export function createApp(options: {
 
   app.post(
     '/api/tasks/preview',
-    rateLimit({ windowMs: 60000, limit: 12, keyGenerator: req => req.session.uid }),
+    sharedLimit('preview'),
     async (req, res) => {
       ok(res, await service.preview(req.session, req.body));
     }
   );
 
-  app.post('/api/tasks', async (req, res) => {
+  app.post('/api/tasks', sharedLimit('task'), async (req, res) => {
     ok(res, await service.createTask(req.session, req.body), 201);
   });
 
@@ -217,7 +227,7 @@ export function createApp(options: {
 
   app.post(
     '/api/incidents',
-    rateLimit({ windowMs: 60000, limit: 12, keyGenerator: req => req.session.uid }),
+    sharedLimit('incident'),
     async (req, res) => {
       ok(res, await service.createIncident(req.session, req.body), 201);
     }
@@ -225,10 +235,10 @@ export function createApp(options: {
 
   app.post(
     '/api/incidents/analyze',
-    rateLimit({ windowMs: 60000, limit: 20, keyGenerator: req => req.session.uid }),
+    sharedLimit('analyze'),
     async (req, res) => {
       const text = typeof req.body.text === 'string' ? req.body.text.trim() : '';
-      ensure(text.length >= 2, 400, 'INVALID_TEXT', 'Provide incident text to analyze.');
+      ensure(text.length >= 2 && text.length <= 6000, 400, 'INVALID_TEXT', 'Provide between 2 and 6000 characters of incident text.');
       const lang = req.body.language && ['en', 'hi', 'bn'].includes(req.body.language)
         ? (req.body.language as 'en' | 'hi' | 'bn')
         : 'en';
@@ -255,7 +265,7 @@ export function createApp(options: {
 
   app.post(
     '/api/incidents/:id/retry-translation',
-    rateLimit({ windowMs: 60000, limit: 6, keyGenerator: req => req.session.uid }),
+    sharedLimit('retryTranslation'),
     async (req, res) => {
       ok(res, await service.retryIncidentTranslation(req.session, String(req.params.id)));
     }
@@ -328,7 +338,7 @@ export function createApp(options: {
     });
   };
 
-  const transcribeRateLimit = rateLimit({ windowMs: 60000, limit: 30, keyGenerator: req => req.session.uid });
+  const transcribeRateLimit = sharedLimit('transcribe');
   const transcribeRoleGuard: express.RequestHandler = (req, _res, next) => {
     service.allow(req.session, 'worker', 'contractor', 'hospital_responder');
     next();

@@ -10,7 +10,7 @@ async function req(path, token, body, method) {
 }
 const cfg=await req('/api/config');
 async function login(role) {
- const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${cfg.body.data.firebase.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:`${role}@bhashabandhu.demo`,password:process.env[`DEMO_${role.toUpperCase()}_PASSWORD`] || `${role[0].toUpperCase()+role.slice(1)}@123`,returnSecureToken:true})});
+ const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${cfg.body.data.firebase.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:`${role}@bhashabandhu.demo`,password:process.env[`DEMO_${role.toUpperCase()}_PASSWORD`],returnSecureToken:true})});
  const a=await r.json(); if(!a.idToken)throw Error(`Login ${role}: ${a.error?.message}`); return a.idToken;
 }
 const tokens={}; for(const role of ['worker','contractor','hospital']) {tokens[role]=await login(role);save(`login ${role}`,await req('/api/me',tokens[role]));}

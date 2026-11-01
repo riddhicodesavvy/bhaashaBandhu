@@ -226,8 +226,8 @@ export async function analyzeIncident(
   const schema = z.object({
     category: z.enum(['injury', 'hazard', 'unsafe_condition', 'near_miss', 'other']),
     urgency: z.enum(['low', 'medium', 'high', 'urgent']),
-    location: z.string(),
-    summary: z.string().min(1)
+    location: z.string().max(500),
+    summary: z.string().min(1).max(6000)
   });
 
   const parsed = schema.safeParse(result);
@@ -278,7 +278,7 @@ export async function transcribe(
   // Short domain-specific vocabulary prompts per locale to optimize accuracy without hallucinating
   const vocabularyPrompts: Record<string, string> = {
     hi: 'निर्माण स्थल सुरक्षा: सीढ़ियों, मचान, रेलिंग, मजदूर, चोट, खतरा, दुर्घटना।',
-    bn: 'নির্মাণ সাইট নিরাপত্তা: সিঁড়ি, মাচা, রেলিং, শ্রমিক, পড়ে গেছে, আঘাত, বিপদ।',
+    bn: 'মাচা, বৈদ্যুতিক প্যানেল, তার, সিঁড়ি, হেলমেট, কংক্রিট, ইস্পাতের রড, শ্রমিক, জল, জেনারেটর ঘর।',
     en: 'Construction site safety: scaffolding, railing, electrical panel, hazard, worker incident.'
   };
 

@@ -66,9 +66,9 @@ This language barrier creates acute real-world vulnerabilities:
 
 | Role | Email | Password | Target Dashboard |
 | :--- | :--- | :--- | :--- |
-| **Worker** (Ravi Kumar) | `worker@bhashabandhu.demo` | `Worker@123` | `/worker` |
-| **Contractor** (Anita Demo) | `contractor@bhashabandhu.demo` | `Contractor@123` | `/contractor` |
-| **Hospital Responder** | `hospital@bhashabandhu.demo` | `Hospital@123` | `/hospital` |
+| **Worker** (Ravi Kumar) | `worker@bhashabandhu.demo` | `Provided privately via environment` | `/worker` |
+| **Contractor** (Anita Demo) | `contractor@bhashabandhu.demo` | `Provided privately via environment` | `/contractor` |
+| **Hospital Responder** | `hospital@bhashabandhu.demo` | `Provided privately via environment` | `/hospital` |
 
 ---
 

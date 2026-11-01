@@ -11,7 +11,6 @@
     "test": "tsx --test tests/*.test.ts",
     "test:unit": "tsx --test tests/*.test.ts",
     "test:ci": "tsx --test tests/*.test.ts",
-    "test:coverage": "tsx --test tests/*.test.ts",
     "seed:demo": "tsx scripts/seed-demo.ts",
     "seed:rich": "tsx scripts/seed-rich-examples.ts",
     "verify:cloud": "tsx scripts/verify-cloud.ts",
@@ -51,5 +50,9 @@
     "supertest": "^7.1.4",
     "typescript": "^5.9.3",
     "vite": "^7.1.10"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.13.7",
+    "uuid": "^11.1.1"
   }
 }

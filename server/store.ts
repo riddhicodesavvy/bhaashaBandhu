@@ -1,6 +1,7 @@
 import { AppError } from './errors';
 import type { Envelope, Kind, Store } from '../shared/types';
 import { requestIdentity } from './request-context';
+import { rateBudgets, type RateOperation } from '../supabase/functions/bb-data/rate-policy';
 
 export const tables: Record<Kind, string> = {
   profile: 'user_profiles',
@@ -35,6 +36,15 @@ const DEFAULT_SUPABASE_GATEWAY_URL = 'https://sdgdmplwvtplvtcndusy.supabase.co/f
  * Supabase Auth is not used; authorization is cryptographically tied to verified Firebase session UIDs.
  */
 export class SupabaseStore implements Store {
+  async consumeLimit(uid: string, operation: RateOperation): Promise<boolean> {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && this.gatewayUrl) {
+      return this.gateway<boolean>({ operation: 'consumeLimit', budget: operation });
+    }
+    return this.request<boolean>('rpc/consume_api_limit', new URLSearchParams(), {
+      method: 'POST',
+      body: JSON.stringify({ p_uid: uid, p_operation: operation, p_limit: rateBudgets[operation] })
+    });
+  }
   private get gatewayUrl(): string | undefined {
     return (
       process.env.SUPABASE_GATEWAY_URL ||

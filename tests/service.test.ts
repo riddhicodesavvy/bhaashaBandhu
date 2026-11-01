@@ -115,7 +115,7 @@ test('wages compute transparently and isolate owner/site; discrepancy is persist
 });
 test('HTTP boundary rejects unauthenticated/spoofed-role requests and malformed input', async () => {
   const { service } = await fixture();
-  const app = createApp({ service, verify: async token => { if (token === 'worker-test-token') return worker; throw new Error('invalid test token'); } });
+  const app = createApp({ consumeLimit: async () => true, service, verify: async token => { if (token === 'worker-test-token') return worker; throw new Error('invalid test token'); } });
   await request(app).get('/api/tasks').expect(401);
   const denied = await request(app).post('/api/tasks').set('Authorization', 'Bearer worker-test-token').send({ role: 'contractor', userId: 'contractor-a' }).expect(403);
   assert.equal(denied.body.error.code, 'FORBIDDEN');

@@ -61,15 +61,15 @@ async function runLiveVerification() {
     return { auth, profile };
   }
 
-  const worker = await signIn('worker@bhashabandhu.demo', 'Worker@123');
+  const worker = await signIn('worker@bhashabandhu.demo', process.env.DEMO_WORKER_PASSWORD);
   assert.equal(worker.profile.role, 'worker');
   console.log(`✓ Worker authenticated: ${worker.profile.displayName} (role: ${worker.profile.role}, UID: ${worker.profile.id})`);
 
-  const contractor = await signIn('contractor@bhashabandhu.demo', 'Contractor@123');
+  const contractor = await signIn('contractor@bhashabandhu.demo', process.env.DEMO_CONTRACTOR_PASSWORD);
   assert.equal(contractor.profile.role, 'contractor');
   console.log(`✓ Contractor authenticated: ${contractor.profile.displayName} (role: ${contractor.profile.role}, UID: ${contractor.profile.id})`);
 
-  const hospital = await signIn('hospital@bhashabandhu.demo', 'Hospital@123');
+  const hospital = await signIn('hospital@bhashabandhu.demo', process.env.DEMO_HOSPITAL_PASSWORD);
   assert.equal(hospital.profile.role, 'hospital_responder');
   console.log(`✓ Hospital authenticated: ${hospital.profile.displayName} (role: ${hospital.profile.role}, UID: ${hospital.profile.id})`);
 

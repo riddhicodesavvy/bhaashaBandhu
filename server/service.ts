@@ -1,4 +1,4 @@
-import { randomUUID, createHmac, timingSafeEqual } from 'node:crypto';
+import { randomUUID, createHmac, createHash, timingSafeEqual } from 'node:crypto';
 import { AppError, ensure } from './errors';
 import { translateIncident, translateTask, analyzeIncident } from './ai';
 import type {
@@ -274,9 +274,14 @@ export class Service {
       'Task text changed or preview expired. Preview again.'
     );
 
+    // A reviewed preview represents one intended assignment. Replaying the same
+    // request (including after an uncertain network response) uses the same key.
+    const taskId = createHash('sha256').update(JSON.stringify([s.uid, s.siteId, input.previewToken, input.deadline, input.location])).digest('hex');
+    const existing = await this.store.get<Task>(taskKey(taskId));
+    if (existing) return (await this.scoped<Task>(s, taskKey(taskId), 'task')).payload;
     const now = new Date().toISOString();
     const task: Task = {
-      id: randomUUID(),
+      id: taskId,
       siteId: s.siteId,
       assignedTo: input.assignedTo,
       createdBy: s.uid,
@@ -290,14 +295,17 @@ export class Service {
       updatedAt: now
     };
 
-    await this.store.insert({
+    try { await this.store.insert({
       id: taskKey(task.id),
       kind: 'task',
       siteId: s.siteId,
       ownerId: task.assignedTo,
       payload: task,
       version: 1
-    });
+    }); } catch (error) {
+      if (!(error instanceof AppError) || error.status !== 409) throw error;
+      return (await this.scoped<Task>(s, taskKey(taskId), 'task')).payload;
+    }
 
     return task;
   }

@@ -40,8 +40,9 @@ function adminApp() {
 }
 async function verifyIdentity(token) {
   let claims;
+  const checkRevoked = !!(process.env.FIREBASE_ADMIN_CREDENTIALS_JSON || process.env.GOOGLE_APPLICATION_CREDENTIALS) || process.env.FIREBASE_CHECK_REVOKED === "true";
   try {
-    claims = await getAuth(adminApp()).verifyIdToken(token, process.env.FIREBASE_CHECK_REVOKED === "true");
+    claims = await getAuth(adminApp()).verifyIdToken(token, checkRevoked);
   } catch {
     throw new AppError(401, "INVALID_TOKEN", "Your session could not be verified. Sign in again.");
   }
@@ -95,6 +96,18 @@ function createSessionVerifier(store, identity = verifyIdentity) {
 import { AsyncLocalStorage } from "node:async_hooks";
 var requestIdentity = new AsyncLocalStorage();
 
+// supabase/functions/bb-data/rate-policy.ts
+var rateBudgets = {
+  transcribe: 20,
+  analyze: 20,
+  preview: 12,
+  incident: 12,
+  task: 12,
+  retryTranslation: 6,
+  write: 60,
+  gateway: 300
+};
+
 // server/store.ts
 var tables = {
   profile: "user_profiles",
@@ -114,6 +127,15 @@ var decode = (kind, row) => ({
 var DEFAULT_SUPABASE_URL = "https://sdgdmplwvtplvtcndusy.supabase.co";
 var DEFAULT_SUPABASE_GATEWAY_URL = "https://sdgdmplwvtplvtcndusy.supabase.co/functions/v1/bb-data";
 var SupabaseStore = class {
+  async consumeLimit(uid, operation) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && this.gatewayUrl) {
+      return this.gateway({ operation: "consumeLimit", budget: operation });
+    }
+    return this.request("rpc/consume_api_limit", new URLSearchParams(), {
+      method: "POST",
+      body: JSON.stringify({ p_uid: uid, p_operation: operation, p_limit: rateBudgets[operation] })
+    });
+  }
   get gatewayUrl() {
     return process.env.SUPABASE_GATEWAY_URL || (process.env.NODE_ENV === "production" && !process.env.SUPABASE_SERVICE_ROLE_KEY ? DEFAULT_SUPABASE_GATEWAY_URL : void 0);
   }
@@ -286,7 +308,7 @@ var SupabaseStore = class {
 };
 
 // server/service.ts
-import { randomUUID, createHmac, timingSafeEqual } from "node:crypto";
+import { randomUUID, createHmac, createHash, timingSafeEqual } from "node:crypto";
 
 // server/ai.ts
 import { z as z2 } from "zod";
@@ -466,8 +488,8 @@ async function analyzeIncident(text, sourceLanguage) {
   const schema = z2.object({
     category: z2.enum(["injury", "hazard", "unsafe_condition", "near_miss", "other"]),
     urgency: z2.enum(["low", "medium", "high", "urgent"]),
-    location: z2.string(),
-    summary: z2.string().min(1)
+    location: z2.string().max(500),
+    summary: z2.string().min(1).max(6e3)
   });
   const parsed = schema.safeParse(result);
   if (!parsed.success) {
@@ -507,7 +529,7 @@ async function transcribe(buffer, mime, locale) {
   const model = "whisper-large-v3-turbo";
   const vocabularyPrompts = {
     hi: "\u0928\u093F\u0930\u094D\u092E\u093E\u0923 \u0938\u094D\u0925\u0932 \u0938\u0941\u0930\u0915\u094D\u0937\u093E: \u0938\u0940\u0922\u093C\u093F\u092F\u094B\u0902, \u092E\u091A\u093E\u0928, \u0930\u0947\u0932\u093F\u0902\u0917, \u092E\u091C\u0926\u0942\u0930, \u091A\u094B\u091F, \u0916\u0924\u0930\u093E, \u0926\u0941\u0930\u094D\u0918\u091F\u0928\u093E\u0964",
-    bn: "\u09A8\u09BF\u09B0\u09CD\u09AE\u09BE\u09A3 \u09B8\u09BE\u0987\u099F \u09A8\u09BF\u09B0\u09BE\u09AA\u09A4\u09CD\u09A4\u09BE: \u09B8\u09BF\u0981\u09A1\u09BC\u09BF, \u09AE\u09BE\u099A\u09BE, \u09B0\u09C7\u09B2\u09BF\u0982, \u09B6\u09CD\u09B0\u09AE\u09BF\u0995, \u09AA\u09A1\u09BC\u09C7 \u0997\u09C7\u099B\u09C7, \u0986\u0998\u09BE\u09A4, \u09AC\u09BF\u09AA\u09A6\u0964",
+    bn: "\u09AE\u09BE\u099A\u09BE, \u09AC\u09C8\u09A6\u09CD\u09AF\u09C1\u09A4\u09BF\u0995 \u09AA\u09CD\u09AF\u09BE\u09A8\u09C7\u09B2, \u09A4\u09BE\u09B0, \u09B8\u09BF\u0981\u09A1\u09BC\u09BF, \u09B9\u09C7\u09B2\u09AE\u09C7\u099F, \u0995\u0982\u0995\u09CD\u09B0\u09BF\u099F, \u0987\u09B8\u09CD\u09AA\u09BE\u09A4\u09C7\u09B0 \u09B0\u09A1, \u09B6\u09CD\u09B0\u09AE\u09BF\u0995, \u099C\u09B2, \u099C\u09C7\u09A8\u09BE\u09B0\u09C7\u099F\u09B0 \u0998\u09B0\u0964",
     en: "Construction site safety: scaffolding, railing, electrical panel, hazard, worker incident."
   };
   const executeTranscription = async () => {
@@ -791,9 +813,12 @@ var Service = class {
       "PREVIEW_EXPIRED",
       "Task text changed or preview expired. Preview again."
     );
+    const taskId = createHash("sha256").update(JSON.stringify([s.uid, s.siteId, input.previewToken, input.deadline, input.location])).digest("hex");
+    const existing = await this.store.get(taskKey(taskId));
+    if (existing) return (await this.scoped(s, taskKey(taskId), "task")).payload;
     const now = (/* @__PURE__ */ new Date()).toISOString();
     const task = {
-      id: randomUUID(),
+      id: taskId,
       siteId: s.siteId,
       assignedTo: input.assignedTo,
       createdBy: s.uid,
@@ -806,14 +831,19 @@ var Service = class {
       createdAt: now,
       updatedAt: now
     };
-    await this.store.insert({
-      id: taskKey(task.id),
-      kind: "task",
-      siteId: s.siteId,
-      ownerId: task.assignedTo,
-      payload: task,
-      version: 1
-    });
+    try {
+      await this.store.insert({
+        id: taskKey(task.id),
+        kind: "task",
+        siteId: s.siteId,
+        ownerId: task.assignedTo,
+        payload: task,
+        version: 1
+      });
+    } catch (error) {
+      if (!(error instanceof AppError) || error.status !== 409) throw error;
+      return (await this.scoped(s, taskKey(taskId), "task")).payload;
+    }
     return task;
   }
   /**
@@ -1131,6 +1161,14 @@ function createApp(options = {}) {
   const app2 = express();
   const service = options.service || new Service(new SupabaseStore());
   const verify = options.verify || createSessionVerifier(service.store);
+  const consumeLimit = options.consumeLimit || ((uid, operation) => new SupabaseStore().consumeLimit(uid, operation));
+  const sharedLimit = (operation) => async (req, res, next) => {
+    if (!await consumeLimit(req.session.uid, operation)) {
+      res.setHeader("Retry-After", "60");
+      throw new AppError(429, "RATE_LIMIT", "Too many requests. Try again in a minute.");
+    }
+    next();
+  };
   app2.disable("x-powered-by");
   app2.set("trust proxy", 1);
   app2.use(
@@ -1245,12 +1283,12 @@ function createApp(options = {}) {
   });
   app2.post(
     "/api/tasks/preview",
-    rateLimit({ windowMs: 6e4, limit: 12, keyGenerator: (req) => req.session.uid }),
+    sharedLimit("preview"),
     async (req, res) => {
       ok(res, await service.preview(req.session, req.body));
     }
   );
-  app2.post("/api/tasks", async (req, res) => {
+  app2.post("/api/tasks", sharedLimit("task"), async (req, res) => {
     ok(res, await service.createTask(req.session, req.body), 201);
   });
   app2.get("/api/tasks/:id", async (req, res) => {
@@ -1266,17 +1304,17 @@ function createApp(options = {}) {
   });
   app2.post(
     "/api/incidents",
-    rateLimit({ windowMs: 6e4, limit: 12, keyGenerator: (req) => req.session.uid }),
+    sharedLimit("incident"),
     async (req, res) => {
       ok(res, await service.createIncident(req.session, req.body), 201);
     }
   );
   app2.post(
     "/api/incidents/analyze",
-    rateLimit({ windowMs: 6e4, limit: 20, keyGenerator: (req) => req.session.uid }),
+    sharedLimit("analyze"),
     async (req, res) => {
       const text = typeof req.body.text === "string" ? req.body.text.trim() : "";
-      ensure(text.length >= 2, 400, "INVALID_TEXT", "Provide incident text to analyze.");
+      ensure(text.length >= 2 && text.length <= 6e3, 400, "INVALID_TEXT", "Provide between 2 and 6000 characters of incident text.");
       const lang = req.body.language && ["en", "hi", "bn"].includes(req.body.language) ? req.body.language : "en";
       ok(res, await service.analyzeIncident(req.session, text, lang));
     }
@@ -1297,7 +1335,7 @@ function createApp(options = {}) {
   }
   app2.post(
     "/api/incidents/:id/retry-translation",
-    rateLimit({ windowMs: 6e4, limit: 6, keyGenerator: (req) => req.session.uid }),
+    sharedLimit("retryTranslation"),
     async (req, res) => {
       ok(res, await service.retryIncidentTranslation(req.session, String(req.params.id)));
     }
@@ -1359,7 +1397,7 @@ function createApp(options = {}) {
       text: await transcribe(req.file.buffer, req.file.mimetype.split(";")[0], lang)
     });
   };
-  const transcribeRateLimit = rateLimit({ windowMs: 6e4, limit: 30, keyGenerator: (req) => req.session.uid });
+  const transcribeRateLimit = sharedLimit("transcribe");
   const transcribeRoleGuard = (req, _res, next) => {
     service.allow(req.session, "worker", "contractor", "hospital_responder");
     next();

@@ -99,9 +99,9 @@ async function runSecurityAudit() {
   record('No token → protected API', noTokenBlocked, 'All 9 sensitive API endpoints return HTTP 401 SIGN_IN_REQUIRED when unauthenticated');
 
   // Authenticate the 3 distinct roles
-  const worker = await signIn('worker@bhashabandhu.demo', 'Worker@123');
-  const contractor = await signIn('contractor@bhashabandhu.demo', 'Contractor@123');
-  const hospital = await signIn('hospital@bhashabandhu.demo', 'Hospital@123');
+  const worker = await signIn('worker@bhashabandhu.demo', process.env.DEMO_WORKER_PASSWORD);
+  const contractor = await signIn('contractor@bhashabandhu.demo', process.env.DEMO_CONTRACTOR_PASSWORD);
+  const hospital = await signIn('hospital@bhashabandhu.demo', process.env.DEMO_HOSPITAL_PASSWORD);
 
   // --- Attack 3: Worker calling Contractor / Hospital endpoints ---
   const workerToContractorApis = [

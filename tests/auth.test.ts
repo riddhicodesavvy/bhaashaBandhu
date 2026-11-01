@@ -29,7 +29,7 @@ test('invalid Firebase token is rejected before Supabase lookup', async () => {
   let queried = false;
   const store = { get: async () => { queried = true; return null; } } as unknown as Store;
   const verify = createSessionVerifier(store, async () => { throw new AppError(401, 'INVALID_TOKEN', 'Invalid'); });
-  const app = createApp({ service: new Service(store), verify });
+  const app = createApp({ consumeLimit: async () => true, service: new Service(store), verify });
   await request(app).get('/api/me').set('Authorization', 'Bearer invalid').expect(401);
   assert.equal(queried, false);
 });
@@ -56,7 +56,7 @@ test('Firebase Functions raw multipart body is replayed for audio transcription'
   try {
     process.env.GROQ_API_KEY = 'test-only-key';
     globalThis.fetch = async () => new Response(JSON.stringify({text:'Synthetic audio transcript'}), {status:200});
-    const api = createApp({verify:async () => ({uid:'worker',role:'worker',siteId:'demo'})});
+    const api = createApp({ consumeLimit: async () => true,verify:async () => ({uid:'worker',role:'worker',siteId:'demo'})});
     const wrapper = express();
     wrapper.use(express.raw({type:'multipart/form-data',limit:'4mb'}));
     wrapper.use((req,_res,next) => { (req as express.Request & {rawBody?:Buffer}).rawBody = req.body; next(); });

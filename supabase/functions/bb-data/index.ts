@@ -1,3 +1,4 @@
+import { rateBudgets } from './rate-policy.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { createRemoteJWKSet, jwtVerify } from 'npm:jose@6';
 import { canRead, check, Denied, validateInsert, validateUpdate, type Actor, type Kind, type Row } from './policy.ts';
@@ -8,7 +9,11 @@ const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVI
 const cols='id,site_id,owner_id,payload,version';
 const decode=(kind:Kind,r:any):Row=>({kind,id:r.id,siteId:r.site_id,ownerId:r.owner_id,payload:r.payload,version:r.version});
 const json=(data:unknown,error:unknown=null,status=200)=>new Response(JSON.stringify({data,error}),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
-const rate=new Map<string,{at:number;count:number}>();
+async function consume(uid:string, operation:keyof typeof rateBudgets) {
+  const {data,error}=await db.rpc('consume_api_limit',{p_uid:uid,p_operation:operation,p_limit:rateBudgets[operation]});
+  check(!error&&typeof data==='boolean',503,'RATE_LIMIT_UNAVAILABLE','Shared rate limiter is unavailable.');
+  return data;
+}
 async function read(kind:Kind,id:string){const {data,error}=await db.from(tables[kind]).select(cols).eq('id',id).maybeSingle();if(error)throw new Denied(503,'DATABASE_ERROR','Database lookup failed.');return data?decode(kind,data):null;}
 Deno.serve(async req=>{
   try {
@@ -17,11 +22,15 @@ Deno.serve(async req=>{
     let uid:string;
     try {const {payload}=await jwtVerify(token,jwks,{issuer:`https://securetoken.google.com/${project}`,audience:project,algorithms:['RS256']});check(typeof payload.sub==='string'&&payload.sub.length>0,401);uid=payload.sub;}
     catch {throw new Denied(401,'INVALID_TOKEN','Firebase identity could not be verified.');}
-    const now=Date.now(),bucket=rate.get(uid);
-    if(!bucket||now-bucket.at>60000)rate.set(uid,{at:now,count:1});else{bucket.count++;check(bucket.count<=300,429,'RATE_LIMIT','Please retry shortly.');}
-    if(rate.size>1000)for(const [id,b] of rate)if(now-b.at>60000)rate.delete(id);
+    check(await consume(uid,'gateway'),429,'RATE_LIMIT','Please retry shortly.');
     const text=await req.text();check(text.length<=256000,413,'INPUT_LIMIT','Request is too large.');
     let body:any;try{body=JSON.parse(text);}catch{throw new Denied(400,'INVALID_JSON','Request must contain JSON.');}
+    if(body.operation==='consumeLimit') {
+      check(typeof body.budget==='string'&&Object.hasOwn(rateBudgets,body.budget)&&body.budget!=='gateway',400,'INVALID_BUDGET','Unsupported rate budget.');
+      const own=await read('profile',`profile:${uid}`);
+      check(own&&own.ownerId===uid&&own.payload.id===uid&&own.payload.siteId===own.siteId&&['worker','contractor','hospital_responder'].includes(own.payload.role),403,'PROFILE_NOT_CONFIGURED','Authorized profile required.');
+      return json(await consume(uid,body.budget as keyof typeof rateBudgets));
+    }
     const kind=body.kind as Kind;check(Object.hasOwn(tables,kind),400,'INVALID_KIND','Unsupported data kind.');
     const operation=body.operation;
     if(operation==='get'&&kind==='profile'&&body.id===`profile:${uid}`)return json(await read('profile',body.id));
@@ -48,12 +57,14 @@ Deno.serve(async req=>{
     const row=body.row as Row;
     check(row&&row.kind===kind&&typeof row.id==='string'&&row.id.length<300&&row.payload&&typeof row.payload==='object',400,'INVALID_RECORD','Invalid record data.');
     if(operation==='insert') {
+      check(await consume(uid,kind==='incident'?'incident':kind==='task'?'task':'write'),429,'RATE_LIMIT','Please retry shortly.');
       const worker=kind==='task'||kind==='wage'?await read('profile',`profile:${row.ownerId}`):null;
       validateInsert(actor,row,worker);
       const {error}=await db.from(tables[kind]).insert({id:row.id,site_id:row.siteId,owner_id:row.ownerId,payload:row.payload,version:1});
       if(error)throw new Denied(error.code==='23505'?409:400,'DATABASE_CONSTRAINT','Record could not be inserted.');return json(null);
     }
     check(operation==='update',400,'INVALID_OPERATION','Unsupported operation.');
+    check(await consume(uid,'write'),429,'RATE_LIMIT','Please retry shortly.');
     const old=await read(kind,row.id);check(old&&canRead(actor,old),404,'NOT_FOUND','Record not found or unavailable.');
     if(old.version!==body.expectedVersion)return json(false);
     validateUpdate(actor,old,row);
