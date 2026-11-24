@@ -1,0 +1,1540 @@
+{
+  "dataset_name": "bhaashabandhu_multilingual_90_v1",
+  "total_cases": 90,
+  "direction_counts": {
+    "en->hi": 30,
+    "en->bn": 30,
+    "hi->en": 15,
+    "bn->en": 15
+  },
+  "reference_provenance_warning": "All 90 reference translations are author-drafted benchmark targets pending independent bilingual native-speaker validation. They must NOT be cited as human-validated ground truth.",
+  "cases": [
+    {
+      "id": "TR-001",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "task_instruction",
+      "source_text": "Move 5 cement bags to Zone B by 8 PM.",
+      "reference_text": "शाम 8 बजे तक 5 सीमेंट की बोरियां ज़ोन B में ले जाएं।",
+      "expected_numbers": [
+        "5",
+        "8"
+      ],
+      "critical_terms": [
+        "ज़ोन B",
+        "सीमेंट"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-002",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "task_instruction",
+      "source_text": "Bind 25mm rebar stirrups at 150mm spacing in Column C-14.",
+      "reference_text": "कॉलम C-14 में 150mm की दूरी पर 25mm सरिया के रिंग बांधें।",
+      "expected_numbers": [
+        "25",
+        "150",
+        "14"
+      ],
+      "critical_terms": [
+        "कॉलम",
+        "सरिया"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-003",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "task_instruction",
+      "source_text": "Pour M25 grade concrete on the 3rd floor slab before 4 PM.",
+      "reference_text": "शाम 4 बजे से पहले 3री मंजिल के स्लैब पर M25 ग्रेड कंक्रीट डालें।",
+      "expected_numbers": [
+        "25",
+        "3",
+        "4"
+      ],
+      "critical_terms": [
+        "कंक्रीट",
+        "स्लैब"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-004",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "task_instruction",
+      "source_text": "Install timber shoring jacks inside the 2 meter trench in Zone 1.",
+      "reference_text": "ज़ोन 1 में 2 मीटर गहरी खाई के अंदर लकड़ी के शोरिंग जैक लगाएं।",
+      "expected_numbers": [
+        "2",
+        "1"
+      ],
+      "critical_terms": [
+        "खाई",
+        "शोरिंग"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-005",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "task_instruction",
+      "source_text": "Tighten all 12 scaffold coupler clamps on Tower A north wall.",
+      "reference_text": "टावर A की उत्तरी दीवार पर सभी 12 मचान कप्लर क्लैम्प कसें।",
+      "expected_numbers": [
+        "12"
+      ],
+      "critical_terms": [
+        "मचान",
+        "क्लैम्प"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-006",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "safety_instruction",
+      "source_text": "Wear safety shoes and a double-lanyard harness at 4th floor height.",
+      "reference_text": "4थी मंजिल की ऊंचाई पर सुरक्षा जूते और डबल-लैनयार्ड हार्नेस पहनें।",
+      "expected_numbers": [
+        "4"
+      ],
+      "critical_terms": [
+        "सुरक्षा जूते",
+        "हार्नेस"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-007",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "safety_instruction",
+      "source_text": "Do not enter any unsupported trench deeper than 1.2 meters.",
+      "reference_text": "1.2 मीटर से गहरी बिना सहारे की खाई में प्रवेश न करें।",
+      "expected_numbers": [
+        "1.2"
+      ],
+      "critical_terms": [
+        "खाई"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-008",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "safety_instruction",
+      "source_text": "Lock out main 440V panel before replacing damaged cable.",
+      "reference_text": "क्षतिग्रस्त तार बदलने से पहले मुख्य 440V पैनल को लॉक आउट करें।",
+      "expected_numbers": [
+        "440"
+      ],
+      "critical_terms": [
+        "पैनल"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-009",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "safety_instruction",
+      "source_text": "Work on exterior scaffolding must stop if wind exceeds 30 km/h.",
+      "reference_text": "यदि हवा 30 km/h से अधिक हो तो बाहरी मचान पर काम बंद कर दें।",
+      "expected_numbers": [
+        "30"
+      ],
+      "critical_terms": [
+        "मचान"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-010",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "safety_instruction",
+      "source_text": "Keep rebar mushroom safety caps on all 18 vertical bars.",
+      "reference_text": "सभी 18 खड़े सरियों पर सुरक्षा कैप लगा कर रखें।",
+      "expected_numbers": [
+        "18"
+      ],
+      "critical_terms": [
+        "सरियों",
+        "सुरक्षा"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-011",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "equipment_terminology",
+      "source_text": "Inspect the submersible sludge pump and 3-inch discharge hose.",
+      "reference_text": "सबमर्सिबल स्लज पंप और 3-इंच डिस्चार्ज पाइप की जांच करें।",
+      "expected_numbers": [
+        "3"
+      ],
+      "critical_terms": [
+        "पंप"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-012",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "equipment_terminology",
+      "source_text": "Check spirit level, plumb bob, and 5-meter steel measuring tape.",
+      "reference_text": "स्पिरिट लेवल, साहुल और 5-मीटर स्टील मापने वाले फीते की जांच करें।",
+      "expected_numbers": [
+        "5"
+      ],
+      "critical_terms": [
+        "फीते"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-013",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "equipment_terminology",
+      "source_text": "Replace the cracked grinding wheel on the 125mm angle grinder.",
+      "reference_text": "125mm एंगल ग्राइंडर पर टूटा हुआ ग्राइंडिंग व्हील बदलें।",
+      "expected_numbers": [
+        "125"
+      ],
+      "critical_terms": [
+        "ग्राइंडर"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-014",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "equipment_terminology",
+      "source_text": "Verify earth leakage circuit breaker rating of 30 mA on distribution board.",
+      "reference_text": "वितरण बोर्ड पर 30 mA के अर्थ लीकेज सर्किट ब्रेकर की जांच करें।",
+      "expected_numbers": [
+        "30"
+      ],
+      "critical_terms": [
+        "बोर्ड"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-015",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "measurements_quantities",
+      "source_text": "Mix 1 part cement, 2 parts sand, and 4 parts aggregate by volume.",
+      "reference_text": "आयतन के अनुसार 1 भाग सीमेंट, 2 भाग रेत और 4 भाग गिट्टी मिलाएं।",
+      "expected_numbers": [
+        "1",
+        "2",
+        "4"
+      ],
+      "critical_terms": [
+        "सीमेंट",
+        "रेत"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-016",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "measurements_quantities",
+      "source_text": "Maintain 50mm concrete cover blocks under the 2nd floor beam.",
+      "reference_text": "2री मंजिल की बीम के नीचे 50mm कंक्रीट कवर ब्लॉक रखें।",
+      "expected_numbers": [
+        "50",
+        "2"
+      ],
+      "critical_terms": [
+        "कंक्रीट",
+        "बीम"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-017",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "measurements_quantities",
+      "source_text": "Stack bricks no higher than 1.5 meters near Gate 2.",
+      "reference_text": "गेट 2 के पास ईंटों का ढेर 1.5 मीटर से अधिक ऊंचा न लगाएं।",
+      "expected_numbers": [
+        "1.5",
+        "2"
+      ],
+      "critical_terms": [
+        "ईंटों",
+        "गेट"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-018",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "measurements_quantities",
+      "source_text": "Keep spoil heap at least 2.5 meters away from excavation edge.",
+      "reference_text": "मिट्टी का ढेर खुदाई के किनारे से कम से कम 2.5 मीटर दूर रखें।",
+      "expected_numbers": [
+        "2.5"
+      ],
+      "critical_terms": [
+        "खुदाई"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-019",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "wage_statement",
+      "source_text": "Daily wage is Rs 800 for 8 hours plus 2x overtime for 3 extra hours.",
+      "reference_text": "8 घंटे की दैनिक मजदूरी 800 रुपये और 3 अतिरिक्त घंटों के लिए 2x ओवरटाइम है।",
+      "expected_numbers": [
+        "800",
+        "8",
+        "2",
+        "3"
+      ],
+      "critical_terms": [
+        "मजदूरी",
+        "ओवरटाइम"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-020",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "wage_statement",
+      "source_text": "Weekly mess deduction of Rs 350 is recorded against 6 days worked.",
+      "reference_text": "6 कार्य दिवसों के लिए 350 रुपये की साप्ताहिक मेस कटौती दर्ज है।",
+      "expected_numbers": [
+        "350",
+        "6"
+      ],
+      "critical_terms": [
+        "कटौती"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-021",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "wage_statement",
+      "source_text": "Total payable balance is Rs 4,900 under BOCW Section 28.",
+      "reference_text": "BOCW धारा 28 के तहत कुल देय शेष राशि 4,900 रुपये है।",
+      "expected_numbers": [
+        "4,900",
+        "28"
+      ],
+      "critical_terms": [
+        "BOCW"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-022",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "wage_statement",
+      "source_text": "Worker disputed 2 unpaid overtime hours from Tuesday shift.",
+      "reference_text": "श्रमिक ने मंगलवार की शिफ्ट के 2 बिना भुगतान वाले ओवरटाइम घंटों पर विवाद दर्ज किया।",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "ओवरटाइम"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-023",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "mixed_language",
+      "source_text": "Tower B ke 3rd floor par 4 scaffold clamps loose hain, check karo.",
+      "reference_text": "टावर B की 3री मंजिल पर 4 मचान क्लैम्प ढीले हैं, जांच करें।",
+      "expected_numbers": [
+        "3",
+        "4"
+      ],
+      "critical_terms": [
+        "टावर B",
+        "मचान"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-024",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "mixed_language",
+      "source_text": "Mixer machine ka 16A plug jal gaya hai, electrician ko bulao.",
+      "reference_text": "मिक्सर मशीन का 16A प्लग जल गया है, इलेक्ट्रीशियन को बुलाएं।",
+      "expected_numbers": [
+        "16"
+      ],
+      "critical_terms": [
+        "मिक्सर"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-025",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "mixed_language",
+      "source_text": "Basement me 2 feet pani bhara hai, pump start karo.",
+      "reference_text": "बेसमेंट में 2 फीट पानी भरा है, पंप चालू करें।",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "बेसमेंट",
+        "पंप"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-026",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "mixed_language",
+      "source_text": "Site gate 1 par 10 helmets aur gloves rakh diye hain.",
+      "reference_text": "साइट गेट 1 पर 10 हेलमेट और दस्ताने रख दिए गए हैं।",
+      "expected_numbers": [
+        "1",
+        "10"
+      ],
+      "critical_terms": [
+        "हेलमेट"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-027",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "ambiguous_instruction",
+      "source_text": "Check the valve on floor 2 before starting the unit.",
+      "reference_text": "यूनिट चालू करने से पहले 2री मंजिल पर वाल्व की जांच करें।",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "वाल्व"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-028",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "ambiguous_instruction",
+      "source_text": "Bring 4 boxes from the lower storage area quickly.",
+      "reference_text": "निचले भंडारण क्षेत्र से जल्दी से 4 डिब्बे लाएं।",
+      "expected_numbers": [
+        "4"
+      ],
+      "critical_terms": [
+        "भंडारण"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-029",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "ambiguous_instruction",
+      "source_text": "Fix the loose railing near the west staircase today.",
+      "reference_text": "आज पश्चिमी सीढ़ी के पास ढीली रेलिंग को ठीक करें।",
+      "expected_numbers": [],
+      "critical_terms": [
+        "रेलिंग",
+        "सीढ़ी"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-030",
+      "direction": "en->hi",
+      "source_locale": "en",
+      "target_locale": "hi",
+      "domain": "ambiguous_instruction",
+      "source_text": "Ask the supervisor if the 2nd shift needs extra PPE.",
+      "reference_text": "पर्यवेक्षक से पूछें कि क्या 2री शिफ्ट को अतिरिक्त PPE की आवश्यकता है।",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "PPE"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-031",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "task_instruction",
+      "source_text": "Move 5 cement bags to Zone B by 8 PM.",
+      "reference_text": "রাত ৮টার মধ্যে ৫টি সিমেন্টের বস্তা জোন B-তে সরান।",
+      "expected_numbers": [
+        "5",
+        "8"
+      ],
+      "critical_terms": [
+        "সিমেন্ট",
+        "জোন B"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-032",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "task_instruction",
+      "source_text": "Bind 25mm rebar stirrups at 150mm spacing in Column C-14.",
+      "reference_text": "কলাম C-14-এ ১৫০ মিমি দূরত্বে ২৫ মিমি রডের রিং বাঁধুন।",
+      "expected_numbers": [
+        "25",
+        "150",
+        "14"
+      ],
+      "critical_terms": [
+        "কলাম",
+        "রড"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-033",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "task_instruction",
+      "source_text": "Pour M25 grade concrete on the 3rd floor slab before 4 PM.",
+      "reference_text": "বিকেল ৪টার আগে ৩য় তলার স্ল্যাবে M25 গ্রেডের কংক্রিট ঢালুন।",
+      "expected_numbers": [
+        "25",
+        "3",
+        "4"
+      ],
+      "critical_terms": [
+        "কংক্রিট",
+        "স্ল্যাব"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-034",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "task_instruction",
+      "source_text": "Install timber shoring jacks inside the 2 meter trench in Zone 1.",
+      "reference_text": "জোন ১-এ ২ মিটার গভীর খাদের ভেতরে কাঠের শোরিং জ্যাক বসান।",
+      "expected_numbers": [
+        "2",
+        "1"
+      ],
+      "critical_terms": [
+        "খাদ",
+        "শোরিং"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-035",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "task_instruction",
+      "source_text": "Tighten all 12 scaffold coupler clamps on Tower A north wall.",
+      "reference_text": "টাওয়ার A-এর উত্তর দেওয়ালে সব ১২টি মাচার কাপলার ক্ল্যাম্প টাইট করুন।",
+      "expected_numbers": [
+        "12"
+      ],
+      "critical_terms": [
+        "মাচা",
+        "ক্ল্যাম্প"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-036",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "safety_instruction",
+      "source_text": "Wear safety shoes and a double-lanyard harness at 4th floor height.",
+      "reference_text": "৪র্থ তলার উচ্চতায় সেফটি জুতো এবং ডাবল-ল্যানইয়ার্ড হারনেস পরুন।",
+      "expected_numbers": [
+        "4"
+      ],
+      "critical_terms": [
+        "জুতো",
+        "হারনেস"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-037",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "safety_instruction",
+      "source_text": "Do not enter any unsupported trench deeper than 1.2 meters.",
+      "reference_text": "১.২ মিটারের বেশি গভীর কোনো সাপোর্টবিহীন খাদের ভেতরে ঢুকবেন না।",
+      "expected_numbers": [
+        "1.2"
+      ],
+      "critical_terms": [
+        "খাদ"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-038",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "safety_instruction",
+      "source_text": "Lock out main 440V panel before replacing damaged cable.",
+      "reference_text": "ক্ষতিগ্রস্ত তার বদলানোর আগে মূল 440V প্যানেল লক আউট করুন।",
+      "expected_numbers": [
+        "440"
+      ],
+      "critical_terms": [
+        "প্যানেল"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-039",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "safety_instruction",
+      "source_text": "Work on exterior scaffolding must stop if wind exceeds 30 km/h.",
+      "reference_text": "বাতাসের গতি ৩০ কিমি/ঘণ্টার বেশি হলে বাইরের মাচার কাজ বন্ধ করতে হবে।",
+      "expected_numbers": [
+        "30"
+      ],
+      "critical_terms": [
+        "মাচা"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-040",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "safety_instruction",
+      "source_text": "Keep rebar mushroom safety caps on all 18 vertical bars.",
+      "reference_text": "সব ১৮টি খাড়া রডের মাথায় সেফটি ক্যাপ পরিয়ে রাখুন।",
+      "expected_numbers": [
+        "18"
+      ],
+      "critical_terms": [
+        "রড",
+        "সেফটি"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-041",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "equipment_terminology",
+      "source_text": "Inspect the submersible sludge pump and 3-inch discharge hose.",
+      "reference_text": "সাবমার্সিবল স্লাজ পাম্প এবং ৩-ইঞ্চি ডিসচার্জ পাইপ পরীক্ষা করুন।",
+      "expected_numbers": [
+        "3"
+      ],
+      "critical_terms": [
+        "পাম্প"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-042",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "equipment_terminology",
+      "source_text": "Check spirit level, plumb bob, and 5-meter steel measuring tape.",
+      "reference_text": "স্পিরিট লেভেল, ওলন এবং ৫-মিটার স্টিলের মাপার ফিতে পরীক্ষা করুন।",
+      "expected_numbers": [
+        "5"
+      ],
+      "critical_terms": [
+        "ফিতে"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-043",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "equipment_terminology",
+      "source_text": "Replace the cracked grinding wheel on the 125mm angle grinder.",
+      "reference_text": "১২৫ মিমি অ্যাঙ্গেল গ্রাইন্ডারের ফাটা গ্রাইন্ডিং হুইল বদলান।",
+      "expected_numbers": [
+        "125"
+      ],
+      "critical_terms": [
+        "গ্রাইন্ডার"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-044",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "equipment_terminology",
+      "source_text": "Verify earth leakage circuit breaker rating of 30 mA on distribution board.",
+      "reference_text": "ডিস্ট্রিবিউশন বোর্ডে ৩০ mA আর্থ লিকেজ সার্কিট ব্রেকার যাচাই করুন।",
+      "expected_numbers": [
+        "30"
+      ],
+      "critical_terms": [
+        "বোর্ড"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-045",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "measurements_quantities",
+      "source_text": "Mix 1 part cement, 2 parts sand, and 4 parts aggregate by volume.",
+      "reference_text": "আয়তন অনুযায়ী ১ ভাগ সিমেন্ট, ২ ভাগ বালি এবং ৪ ভাগ পাথর মেশান।",
+      "expected_numbers": [
+        "1",
+        "2",
+        "4"
+      ],
+      "critical_terms": [
+        "সিমেন্ট",
+        "বালি"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-046",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "measurements_quantities",
+      "source_text": "Maintain 50mm concrete cover blocks under the 2nd floor beam.",
+      "reference_text": "২য় তলার বিমের নিচে ৫০ মিমি কংক্রিট কভার ব্লক রাখুন।",
+      "expected_numbers": [
+        "50",
+        "2"
+      ],
+      "critical_terms": [
+        "কংক্রিট",
+        "বিম"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-047",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "measurements_quantities",
+      "source_text": "Stack bricks no higher than 1.5 meters near Gate 2.",
+      "reference_text": "গেট ২-এর কাছে ইটের স্তূপ ১.৫ মিটারের বেশি উঁচু করবেন না।",
+      "expected_numbers": [
+        "1.5",
+        "2"
+      ],
+      "critical_terms": [
+        "ইট",
+        "গেট"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-048",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "measurements_quantities",
+      "source_text": "Keep spoil heap at least 2.5 meters away from excavation edge.",
+      "reference_text": "মাটির স্তূপ খননের কিনারা থেকে অন্তত ২.৫ মিটার দূরে রাখুন।",
+      "expected_numbers": [
+        "2.5"
+      ],
+      "critical_terms": [
+        "খনন"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-049",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "wage_statement",
+      "source_text": "Daily wage is Rs 800 for 8 hours plus 2x overtime for 3 extra hours.",
+      "reference_text": "৮ ঘণ্টার দৈনিক মজুরি ৮০০ টাকা এবং ৩ অতিরিক্ত ঘণ্টার জন্য ২x ওভারটাইম।",
+      "expected_numbers": [
+        "800",
+        "8",
+        "2",
+        "3"
+      ],
+      "critical_terms": [
+        "মজুরি",
+        "ওভারটাইম"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-050",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "wage_statement",
+      "source_text": "Weekly mess deduction of Rs 350 is recorded against 6 days worked.",
+      "reference_text": "৬ দিনের কাজের বিপরীতে ৩৫০ টাকা সাপ্তাহিক মেস কর্তন নথিভুক্ত হয়েছে।",
+      "expected_numbers": [
+        "350",
+        "6"
+      ],
+      "critical_terms": [
+        "কর্তন"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-051",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "wage_statement",
+      "source_text": "Total payable balance is Rs 4,900 under BOCW Section 28.",
+      "reference_text": "BOCW ধারা ২৮ অনুযায়ী মোট প্রদেয় বাকি ৪,৯০০ টাকা।",
+      "expected_numbers": [
+        "4,900",
+        "28"
+      ],
+      "critical_terms": [
+        "BOCW"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-052",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "wage_statement",
+      "source_text": "Worker disputed 2 unpaid overtime hours from Tuesday shift.",
+      "reference_text": "শ্রমিক মঙ্গলবারের শিফটের ২টি অপরিশোধিত ওভারটাইম ঘণ্টা নিয়ে অমিল জানিয়েছেন।",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "ওভারটাইম"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-053",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "mixed_language",
+      "source_text": "Tower B er 3rd floor e 4 scaffold clamps loose ache, check koro.",
+      "reference_text": "টাওয়ার B-এর ৩য় তলায় ৪টি মাচার ক্ল্যাম্প ঢিলে আছে, পরীক্ষা করুন।",
+      "expected_numbers": [
+        "3",
+        "4"
+      ],
+      "critical_terms": [
+        "টাওয়ার B",
+        "মাচা"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-054",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "mixed_language",
+      "source_text": "Mixer machine er 16A plug pure geche, electrician ke dako.",
+      "reference_text": "মিক্সার মেশিনের 16A প্লাগ পুড়ে গেছে, ইলেকট্রিশিয়ানকে ডাকুন।",
+      "expected_numbers": [
+        "16"
+      ],
+      "critical_terms": [
+        "মিক্সার"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-055",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "mixed_language",
+      "source_text": "Basement e 2 feet jol jomeche, pump start koro.",
+      "reference_text": "বেসমেন্টে ২ ফুট জল জমেছে, পাম্প চালু করুন।",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "বেসমেন্ট",
+        "পাম্প"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-056",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "mixed_language",
+      "source_text": "Site gate 1 e 10 helmets ar gloves rakha ache.",
+      "reference_text": "সাইট গেট ১-এ ১০টি হেলমেট ও দস্তানা রাখা আছে।",
+      "expected_numbers": [
+        "1",
+        "10"
+      ],
+      "critical_terms": [
+        "হেলমেট"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-057",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "ambiguous_instruction",
+      "source_text": "Check the valve on floor 2 before starting the unit.",
+      "reference_text": "ইউনিট চালু করার আগে ২য় তলার ভালভ পরীক্ষা করুন।",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "ভালভ"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-058",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "ambiguous_instruction",
+      "source_text": "Bring 4 boxes from the lower storage area quickly.",
+      "reference_text": "নিচের স্টোরেজ এলাকা থেকে দ্রুত ৪টি বাক্স আনুন।",
+      "expected_numbers": [
+        "4"
+      ],
+      "critical_terms": [
+        "স্টোরেজ"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-059",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "ambiguous_instruction",
+      "source_text": "Fix the loose railing near the west staircase today.",
+      "reference_text": "আজ পশ্চিম সিঁড়ির কাছে ঢিলে রেলিং ঠিক করুন।",
+      "expected_numbers": [],
+      "critical_terms": [
+        "রেলিং",
+        "সিঁড়ি"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-060",
+      "direction": "en->bn",
+      "source_locale": "en",
+      "target_locale": "bn",
+      "domain": "ambiguous_instruction",
+      "source_text": "Ask the supervisor if the 2nd shift needs extra PPE.",
+      "reference_text": "তত্ত্বাবধায়ককে জিজ্ঞাসা করুন ২য় শিফটে অতিরিক্ত PPE দরকার কিনা।",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "PPE"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-061",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "safety_instruction",
+      "source_text": "ज़ोन B में 2री मंजिल की सीढ़ी टूटी हुई है, कोई घायल नहीं है।",
+      "reference_text": "The ladder on the 2nd floor in Zone B is broken; no one is injured.",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "Zone B",
+        "ladder"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-062",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "safety_instruction",
+      "source_text": "पिलर C-4 के पास 16mm सरिया बाहर निकला है, सेफ्टी कैप नहीं है।",
+      "reference_text": "A 16mm rebar is protruding near Pillar C-4 without a safety cap.",
+      "expected_numbers": [
+        "4",
+        "16"
+      ],
+      "critical_terms": [
+        "rebar",
+        "safety cap"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-063",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "safety_instruction",
+      "source_text": "मुख्य जेनरेटर कक्ष में 440V केबल खुली पड़ी है।",
+      "reference_text": "A 440V cable is lying exposed in the main generator room.",
+      "expected_numbers": [
+        "440"
+      ],
+      "critical_terms": [
+        "cable",
+        "generator"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-064",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "task_instruction",
+      "source_text": "3री मंजिल पर मचान की रेलिंग कसने के लिए 2 मजदूर भेजें।",
+      "reference_text": "Send 2 workers to tighten the scaffold railing on the 3rd floor.",
+      "expected_numbers": [
+        "3",
+        "2"
+      ],
+      "critical_terms": [
+        "scaffold",
+        "railing"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-065",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "task_instruction",
+      "source_text": "सुबह 9 बजे से पहले 10 बोरी रेत मिक्सर के पास पहुंचाएं।",
+      "reference_text": "Deliver 10 bags of sand near the mixer before 9 AM.",
+      "expected_numbers": [
+        "10",
+        "9"
+      ],
+      "critical_terms": [
+        "sand",
+        "mixer"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-066",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "equipment_terminology",
+      "source_text": "कंक्रीट वाइब्रेटर की 4-मीटर नली में दरार आ गई है।",
+      "reference_text": "The 4-meter hose of the concrete vibrator has developed a crack.",
+      "expected_numbers": [
+        "4"
+      ],
+      "critical_terms": [
+        "concrete vibrator"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-067",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "equipment_terminology",
+      "source_text": "हमें टावर क्रेन हुक की जांच के लिए 1 नए शैकल की जरूरत है।",
+      "reference_text": "We need 1 new shackle to inspect the tower crane hook.",
+      "expected_numbers": [
+        "1"
+      ],
+      "critical_terms": [
+        "shackle",
+        "crane"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-068",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "measurements_quantities",
+      "source_text": "खाई की गहराई 2.5 मीटर है और पानी का स्तर 15 सेमी बढ़ गया है।",
+      "reference_text": "The trench depth is 2.5 meters and the water level has risen by 15 cm.",
+      "expected_numbers": [
+        "2.5",
+        "15"
+      ],
+      "critical_terms": [
+        "trench"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-069",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "measurements_quantities",
+      "source_text": "स्लैब के लिए 12 घन मीटर कंक्रीट का ऑर्डर दिया गया है।",
+      "reference_text": "12 cubic meters of concrete has been ordered for the slab.",
+      "expected_numbers": [
+        "12"
+      ],
+      "critical_terms": [
+        "concrete",
+        "slab"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-070",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "wage_statement",
+      "source_text": "मैंने पिछले सप्ताह 6 दिन काम किया और 4 घंटे ओवरटाइम किया।",
+      "reference_text": "I worked 6 days last week and did 4 hours of overtime.",
+      "expected_numbers": [
+        "6",
+        "4"
+      ],
+      "critical_terms": [
+        "overtime"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-071",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "wage_statement",
+      "source_text": "मेरी मजदूरी में 200 रुपये की मेस कटौती गलत जोड़ी गई है।",
+      "reference_text": "A 200 rupee mess deduction was wrongly added to my wages.",
+      "expected_numbers": [
+        "200"
+      ],
+      "critical_terms": [
+        "deduction",
+        "wages"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-072",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "mixed_language",
+      "source_text": "2nd floor par scaffolding ka pipe loose hai, turant check karo.",
+      "reference_text": "The scaffolding pipe on the 2nd floor is loose; check immediately.",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "scaffolding",
+        "pipe"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-073",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "mixed_language",
+      "source_text": "Zone 3 me drainage pump band ho gaya hai, 30 minutes se.",
+      "reference_text": "The drainage pump in Zone 3 has been stopped for 30 minutes.",
+      "expected_numbers": [
+        "3",
+        "30"
+      ],
+      "critical_terms": [
+        "pump",
+        "Zone 3"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-074",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "ambiguous_instruction",
+      "source_text": "नीचे वाले कमरे से 3 उपकरण ले आओ।",
+      "reference_text": "Bring 3 tools from the lower room.",
+      "expected_numbers": [
+        "3"
+      ],
+      "critical_terms": [
+        "tools"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-075",
+      "direction": "hi->en",
+      "source_locale": "hi",
+      "target_locale": "en",
+      "domain": "ambiguous_instruction",
+      "source_text": "कल शाम 5 बजे तक यह काम पूरा होना चाहिए।",
+      "reference_text": "This work should be completed by 5 PM tomorrow.",
+      "expected_numbers": [
+        "5"
+      ],
+      "critical_terms": [
+        "completed"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-076",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "safety_instruction",
+      "source_text": "জোন B-তে ২য় তলার সিঁড়ি ভাঙা আছে, কেউ আহত হয়নি।",
+      "reference_text": "The staircase on the 2nd floor in Zone B is broken; no one is injured.",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "Zone B",
+        "staircase"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-077",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "safety_instruction",
+      "source_text": "চতুর্থ তলার মাচার একটি কাপলার ঢিলে হয়ে পাইপ সুরক্ষা জালে পড়েছে।",
+      "reference_text": "A coupler on the 4th floor scaffold loosened and a pipe fell onto the safety net.",
+      "expected_numbers": [
+        "4"
+      ],
+      "critical_terms": [
+        "scaffold",
+        "safety net"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-078",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "safety_instruction",
+      "source_text": "জেনারেটর ঘরের কাছে 440V তার খোলা অবস্থায় পড়ে আছে।",
+      "reference_text": "A 440V wire is lying exposed near the generator room.",
+      "expected_numbers": [
+        "440"
+      ],
+      "critical_terms": [
+        "generator"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-079",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "task_instruction",
+      "source_text": "৩য় তলার মাচার রেলিং টাইট করতে ২ জন শ্রমিক পাঠান।",
+      "reference_text": "Send 2 workers to tighten the scaffold railing on the 3rd floor.",
+      "expected_numbers": [
+        "3",
+        "2"
+      ],
+      "critical_terms": [
+        "scaffold",
+        "railing"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-080",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "task_instruction",
+      "source_text": "সকাল ৯টার আগে মিক্সারের কাছে ১০ বস্তা বালি পৌঁছে দিন।",
+      "reference_text": "Deliver 10 bags of sand near the mixer before 9 AM.",
+      "expected_numbers": [
+        "9",
+        "10"
+      ],
+      "critical_terms": [
+        "sand",
+        "mixer"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-081",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "equipment_terminology",
+      "source_text": "কংক্রিট ভাইব্রেটরের ৪-মিটার পাইপে ফাটল ধরেছে।",
+      "reference_text": "The 4-meter hose of the concrete vibrator has cracked.",
+      "expected_numbers": [
+        "4"
+      ],
+      "critical_terms": [
+        "concrete vibrator"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-082",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "equipment_terminology",
+      "source_text": "সাবমার্সিবল পাম্পের সুইচ বোর্ডে ৩টি ফিউজ পুড়ে গেছে।",
+      "reference_text": "3 fuses on the submersible pump switchboard have blown.",
+      "expected_numbers": [
+        "3"
+      ],
+      "critical_terms": [
+        "pump",
+        "fuses"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-083",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "measurements_quantities",
+      "source_text": "খাদের গভীরতা ২.৫ মিটার এবং জল ১৫ সেমি বেড়েছে।",
+      "reference_text": "The trench depth is 2.5 meters and water has risen 15 cm.",
+      "expected_numbers": [
+        "2.5",
+        "15"
+      ],
+      "critical_terms": [
+        "trench"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-084",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "measurements_quantities",
+      "source_text": "কলামের জন্য ১২ ঘন মিটার কংক্রিট অর্ডার করা হয়েছে।",
+      "reference_text": "12 cubic meters of concrete has been ordered for the column.",
+      "expected_numbers": [
+        "12"
+      ],
+      "critical_terms": [
+        "concrete"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-085",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "wage_statement",
+      "source_text": "গত সপ্তাহে আমি ৬ দিন কাজ করেছি এবং ৪ ঘণ্টা ওভারটাইম করেছি।",
+      "reference_text": "Last week I worked 6 days and did 4 hours of overtime.",
+      "expected_numbers": [
+        "6",
+        "4"
+      ],
+      "critical_terms": [
+        "overtime"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-086",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "wage_statement",
+      "source_text": "আমার মজুরি থেকে ২০০ টাকা মেস কর্তন ভুলভাবে কাটা হয়েছে।",
+      "reference_text": "200 rupees mess deduction was wrongly deducted from my wages.",
+      "expected_numbers": [
+        "200"
+      ],
+      "critical_terms": [
+        "deduction",
+        "wages"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-087",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "mixed_language",
+      "source_text": "2nd floor e scaffolding clamp loose ache, ekhon check korun.",
+      "reference_text": "The scaffolding clamp on the 2nd floor is loose; check now.",
+      "expected_numbers": [
+        "2"
+      ],
+      "critical_terms": [
+        "scaffolding",
+        "clamp"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-088",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "mixed_language",
+      "source_text": "Gate 1 er kache 50mm rebar pipe rakha ache.",
+      "reference_text": "50mm rebar pipes are stacked near Gate 1.",
+      "expected_numbers": [
+        "1",
+        "50"
+      ],
+      "critical_terms": [
+        "rebar",
+        "Gate 1"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-089",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "ambiguous_instruction",
+      "source_text": "নিচের ঘর থেকে ৩টি সরঞ্জাম নিয়ে আসুন।",
+      "reference_text": "Bring 3 tools from the lower room.",
+      "expected_numbers": [
+        "3"
+      ],
+      "critical_terms": [
+        "tools"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    },
+    {
+      "id": "TR-090",
+      "direction": "bn->en",
+      "source_locale": "bn",
+      "target_locale": "en",
+      "domain": "ambiguous_instruction",
+      "source_text": "আগামীকাল বিকেল ৫টার মধ্যে কাজটি শেষ করতে হবে।",
+      "reference_text": "The task must be finished by 5 PM tomorrow.",
+      "expected_numbers": [
+        "5"
+      ],
+      "critical_terms": [
+        "finished"
+      ],
+      "reference_origin": "author_drafted_pending_native_speaker_validation"
+    }
+  ]
+}

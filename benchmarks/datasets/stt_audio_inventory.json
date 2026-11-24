@@ -1,0 +1,64 @@
+{
+  "dataset_name": "bhaashabandhu_stt_inventory_v1",
+  "total_audio_files_found": 7,
+  "verified_transcript_count": 0,
+  "blocker": "No verified human reference transcripts exist for the audio fixtures in test-results/, and live STT evaluation requires calling api.groq.com (paid API approval required).",
+  "files": [
+    {
+      "filename": "audit-final.wav",
+      "path": "test-results/audit-final.wav",
+      "bytes": 170664,
+      "verified_human_reference_transcript": null,
+      "license_status": "internal_synthetic_test_fixture_unverified_transcript",
+      "note": "Found in test-results/, but no ground-truth reference transcript file exists in repo. Cannot compute valid WER/CER without verified reference transcripts."
+    },
+    {
+      "filename": "audit-random.wav",
+      "path": "test-results/audit-random.wav",
+      "bytes": 250026,
+      "verified_human_reference_transcript": null,
+      "license_status": "internal_synthetic_test_fixture_unverified_transcript",
+      "note": "Found in test-results/, but no ground-truth reference transcript file exists in repo. Cannot compute valid WER/CER without verified reference transcripts."
+    },
+    {
+      "filename": "audit-rods.wav",
+      "path": "test-results/audit-rods.wav",
+      "bytes": 154568,
+      "verified_human_reference_transcript": null,
+      "license_status": "internal_synthetic_test_fixture_unverified_transcript",
+      "note": "Found in test-results/, but no ground-truth reference transcript file exists in repo. Cannot compute valid WER/CER without verified reference transcripts."
+    },
+    {
+      "filename": "bn-test.mp3",
+      "path": "test-results/bn-test.mp3",
+      "bytes": 36288,
+      "verified_human_reference_transcript": null,
+      "license_status": "internal_synthetic_test_fixture_unverified_transcript",
+      "note": "Found in test-results/, but no ground-truth reference transcript file exists in repo. Cannot compute valid WER/CER without verified reference transcripts."
+    },
+    {
+      "filename": "en-test.wav",
+      "path": "test-results/en-test.wav",
+      "bytes": 189840,
+      "verified_human_reference_transcript": null,
+      "license_status": "internal_synthetic_test_fixture_unverified_transcript",
+      "note": "Found in test-results/, but no ground-truth reference transcript file exists in repo. Cannot compute valid WER/CER without verified reference transcripts."
+    },
+    {
+      "filename": "hi-test.mp3",
+      "path": "test-results/hi-test.mp3",
+      "bytes": 36288,
+      "verified_human_reference_transcript": null,
+      "license_status": "internal_synthetic_test_fixture_unverified_transcript",
+      "note": "Found in test-results/, but no ground-truth reference transcript file exists in repo. Cannot compute valid WER/CER without verified reference transcripts."
+    },
+    {
+      "filename": "synthetic-report.wav",
+      "path": "test-results/synthetic-report.wav",
+      "bytes": 310216,
+      "verified_human_reference_transcript": null,
+      "license_status": "internal_synthetic_test_fixture_unverified_transcript",
+      "note": "Found in test-results/, but no ground-truth reference transcript file exists in repo. Cannot compute valid WER/CER without verified reference transcripts."
+    }
+  ]
+}

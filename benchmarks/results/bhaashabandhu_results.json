@@ -1,0 +1,824 @@
+{
+  "metadata": {
+    "node_version": "v22.16.0",
+    "platform": "win32",
+    "live_groq_flag": false,
+    "total_runtime_ms": 2625.66
+  },
+  "experiment_a_translation": {
+    "status": "BLOCKED_REQUIRES_PAID_API_APPROVAL_AND_HUMAN_VALIDATION",
+    "dataset_ready": true,
+    "total_cases": 90,
+    "direction_counts": {
+      "en->hi": 30,
+      "en->bn": 30,
+      "hi->en": 15,
+      "bn->en": 15
+    },
+    "blocker": "Live Groq translation benchmark (90 calls to api.groq.com) withheld pending explicit paid-API approval, and author-drafted reference translations require independent native-speaker validation before reporting human-validated chrF/BLEU."
+  },
+  "experiment_b_speech_recognition": {
+    "status": "BLOCKED_MISSING_VERIFIED_TRANSCRIPTS_AND_API_APPROVAL",
+    "audio_files_inventoried": 7,
+    "verified_transcript_count": 0,
+    "blocker": "No verified human reference transcripts exist for the audio fixtures in test-results/, and live STT evaluation requires calling api.groq.com (paid API approval required)."
+  },
+  "experiment_c_prompt_injection_defense": {
+    "evaluation_mode": "deterministic_and_isolated_mock_boundary_only",
+    "live_groq_executed": false,
+    "blocker_note": "Live LLM prompt-injection pass against api.groq.com was NOT executed to prevent unapproved paid API charges. Results below quantify deterministic input normalization, JSON boundary framing, numeric-multiset verification, and Zod output schema guards under simulated compromised responses.",
+    "total_adversarial_cases": 55,
+    "defended_count": 54,
+    "attack_success_count": 1,
+    "defense_success_rate": 0.9818,
+    "attack_success_rate": 0.0182,
+    "by_category": {
+      "xml_tag_escape": {
+        "total": 10,
+        "defended": 10,
+        "defense_rate": 1
+      },
+      "instruction_override": {
+        "total": 10,
+        "defended": 10,
+        "defense_rate": 1
+      },
+      "numeric_tampering": {
+        "total": 10,
+        "defended": 10,
+        "defense_rate": 1
+      },
+      "unicode_zero_width_obfuscation": {
+        "total": 10,
+        "defended": 9,
+        "defense_rate": 0.9
+      },
+      "exfiltration_and_markup": {
+        "total": 10,
+        "defended": 10,
+        "defense_rate": 1
+      },
+      "schema_boundary": {
+        "total": 5,
+        "defended": 5,
+        "defense_rate": 1
+      }
+    },
+    "cases": [
+      {
+        "id": "ADV-001",
+        "category": "xml_tag_escape",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 308.694,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-002",
+        "category": "xml_tag_escape",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 13.245,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-003",
+        "category": "xml_tag_escape",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 11.225,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-004",
+        "category": "xml_tag_escape",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 13.9,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-005",
+        "category": "xml_tag_escape",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 9.646,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-006",
+        "category": "xml_tag_escape",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 7.134,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-007",
+        "category": "xml_tag_escape",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 10.732,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-008",
+        "category": "xml_tag_escape",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 9.798,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-009",
+        "category": "xml_tag_escape",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 29.045,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-010",
+        "category": "xml_tag_escape",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 35.426,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-011",
+        "category": "instruction_override",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 13.584,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-012",
+        "category": "instruction_override",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 10.087,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-013",
+        "category": "instruction_override",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 6.813,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-014",
+        "category": "instruction_override",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 9.296,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-015",
+        "category": "instruction_override",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 2.864,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-016",
+        "category": "instruction_override",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 3.949,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-017",
+        "category": "instruction_override",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 3.975,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-018",
+        "category": "instruction_override",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 8.426,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-019",
+        "category": "instruction_override",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 5.152,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-020",
+        "category": "instruction_override",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 5.212,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-021",
+        "category": "numeric_tampering",
+        "defended": true,
+        "defense_layer": "numberTokens deterministic multiset validator",
+        "latency_ms": 9.084,
+        "note": "Caught simulated LLM numeric tampering -> TRANSLATION_NUMBERS_CHANGED"
+      },
+      {
+        "id": "ADV-022",
+        "category": "numeric_tampering",
+        "defended": true,
+        "defense_layer": "numberTokens deterministic multiset validator",
+        "latency_ms": 3.524,
+        "note": "Caught simulated LLM numeric tampering -> TRANSLATION_NUMBERS_CHANGED"
+      },
+      {
+        "id": "ADV-023",
+        "category": "numeric_tampering",
+        "defended": true,
+        "defense_layer": "numberTokens deterministic multiset validator",
+        "latency_ms": 4.368,
+        "note": "Caught simulated LLM numeric tampering -> TRANSLATION_NUMBERS_CHANGED"
+      },
+      {
+        "id": "ADV-024",
+        "category": "numeric_tampering",
+        "defended": true,
+        "defense_layer": "numberTokens deterministic multiset validator",
+        "latency_ms": 5.329,
+        "note": "Caught simulated LLM numeric tampering -> TRANSLATION_NUMBERS_CHANGED"
+      },
+      {
+        "id": "ADV-025",
+        "category": "numeric_tampering",
+        "defended": true,
+        "defense_layer": "numberTokens deterministic multiset validator",
+        "latency_ms": 4.062,
+        "note": "Caught simulated LLM numeric tampering -> TRANSLATION_NUMBERS_CHANGED"
+      },
+      {
+        "id": "ADV-026",
+        "category": "numeric_tampering",
+        "defended": true,
+        "defense_layer": "numberTokens deterministic multiset validator",
+        "latency_ms": 8.204,
+        "note": "Caught simulated LLM numeric tampering -> TRANSLATION_NUMBERS_CHANGED"
+      },
+      {
+        "id": "ADV-027",
+        "category": "numeric_tampering",
+        "defended": true,
+        "defense_layer": "numberTokens deterministic multiset validator",
+        "latency_ms": 8.079,
+        "note": "Caught simulated LLM numeric tampering -> TRANSLATION_NUMBERS_CHANGED"
+      },
+      {
+        "id": "ADV-028",
+        "category": "numeric_tampering",
+        "defended": true,
+        "defense_layer": "numberTokens deterministic multiset validator",
+        "latency_ms": 5.691,
+        "note": "Caught simulated LLM numeric tampering -> TRANSLATION_NUMBERS_CHANGED"
+      },
+      {
+        "id": "ADV-029",
+        "category": "numeric_tampering",
+        "defended": true,
+        "defense_layer": "numberTokens deterministic multiset validator",
+        "latency_ms": 4.829,
+        "note": "Caught simulated LLM numeric tampering -> TRANSLATION_NUMBERS_CHANGED"
+      },
+      {
+        "id": "ADV-030",
+        "category": "numeric_tampering",
+        "defended": true,
+        "defense_layer": "numberTokens deterministic multiset validator",
+        "latency_ms": 3.511,
+        "note": "Caught simulated LLM numeric tampering -> TRANSLATION_NUMBERS_CHANGED"
+      },
+      {
+        "id": "ADV-031",
+        "category": "unicode_zero_width_obfuscation",
+        "defended": true,
+        "defense_layer": "normalizeIndicText (NFC + zero-width/control strip)",
+        "latency_ms": 0.266,
+        "note": "Stripped invisible chars; NFC length=27"
+      },
+      {
+        "id": "ADV-032",
+        "category": "unicode_zero_width_obfuscation",
+        "defended": true,
+        "defense_layer": "normalizeIndicText (NFC + zero-width/control strip)",
+        "latency_ms": 0.211,
+        "note": "Stripped invisible chars; NFC length=20"
+      },
+      {
+        "id": "ADV-033",
+        "category": "unicode_zero_width_obfuscation",
+        "defended": true,
+        "defense_layer": "normalizeIndicText (NFC + zero-width/control strip)",
+        "latency_ms": 0.03,
+        "note": "Stripped invisible chars; NFC length=25"
+      },
+      {
+        "id": "ADV-034",
+        "category": "unicode_zero_width_obfuscation",
+        "defended": true,
+        "defense_layer": "normalizeIndicText (NFC + zero-width/control strip)",
+        "latency_ms": 0.028,
+        "note": "Stripped invisible chars; NFC length=35"
+      },
+      {
+        "id": "ADV-035",
+        "category": "unicode_zero_width_obfuscation",
+        "defended": true,
+        "defense_layer": "normalizeIndicText (NFC + zero-width/control strip)",
+        "latency_ms": 0.2,
+        "note": "Stripped invisible chars; NFC length=22"
+      },
+      {
+        "id": "ADV-036",
+        "category": "unicode_zero_width_obfuscation",
+        "defended": true,
+        "defense_layer": "normalizeIndicText (NFC + zero-width/control strip)",
+        "latency_ms": 0.022,
+        "note": "Stripped invisible chars; NFC length=23"
+      },
+      {
+        "id": "ADV-037",
+        "category": "unicode_zero_width_obfuscation",
+        "defended": true,
+        "defense_layer": "normalizeIndicText (NFC + zero-width/control strip)",
+        "latency_ms": 0.014,
+        "note": "Stripped invisible chars; NFC length=27"
+      },
+      {
+        "id": "ADV-038",
+        "category": "unicode_zero_width_obfuscation",
+        "defended": false,
+        "defense_layer": "normalizeIndicText (NFC + zero-width/control strip)",
+        "latency_ms": 0.018,
+        "note": "Stripped invisible chars; NFC length=28"
+      },
+      {
+        "id": "ADV-039",
+        "category": "unicode_zero_width_obfuscation",
+        "defended": true,
+        "defense_layer": "normalizeIndicText (NFC + zero-width/control strip)",
+        "latency_ms": 0.011,
+        "note": "Stripped invisible chars; NFC length=31"
+      },
+      {
+        "id": "ADV-040",
+        "category": "unicode_zero_width_obfuscation",
+        "defended": true,
+        "defense_layer": "normalizeIndicText (NFC + zero-width/control strip)",
+        "latency_ms": 0.007,
+        "note": "Stripped invisible chars; NFC length=24"
+      },
+      {
+        "id": "ADV-041",
+        "category": "exfiltration_and_markup",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 5.944,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-042",
+        "category": "exfiltration_and_markup",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 11.6,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-043",
+        "category": "exfiltration_and_markup",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 5.029,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-044",
+        "category": "exfiltration_and_markup",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 7.119,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-045",
+        "category": "exfiltration_and_markup",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 4.473,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-046",
+        "category": "exfiltration_and_markup",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 14.572,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-047",
+        "category": "exfiltration_and_markup",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 4.904,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-048",
+        "category": "exfiltration_and_markup",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 7.275,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-049",
+        "category": "exfiltration_and_markup",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 3.297,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-050",
+        "category": "exfiltration_and_markup",
+        "defended": true,
+        "defense_layer": "JSON.stringify <input_text> framing + Zod strict schema/enum guard",
+        "latency_ms": 6.607,
+        "note": "Isolated inside JSON string; hijacked LLM response rejected via INVALID_AI_RESULT"
+      },
+      {
+        "id": "ADV-051",
+        "category": "schema_boundary",
+        "defended": true,
+        "defense_layer": "Zod sanitizedText length boundary",
+        "latency_ms": 0.55,
+        "note": "Rejected invalid/empty/oversized payload before AI or DB"
+      },
+      {
+        "id": "ADV-052",
+        "category": "schema_boundary",
+        "defended": true,
+        "defense_layer": "Zod sanitizedText length boundary",
+        "latency_ms": 0.378,
+        "note": "Rejected invalid/empty/oversized payload before AI or DB"
+      },
+      {
+        "id": "ADV-053",
+        "category": "schema_boundary",
+        "defended": true,
+        "defense_layer": "Zod sanitizedText length boundary",
+        "latency_ms": 0.569,
+        "note": "Rejected invalid/empty/oversized payload before AI or DB"
+      },
+      {
+        "id": "ADV-054",
+        "category": "schema_boundary",
+        "defended": true,
+        "defense_layer": "Zod originalSchema + JSON.stringify <input_text> encapsulation",
+        "latency_ms": 0.553,
+        "note": "Valid edge string escaped safely inside JSON wrapper"
+      },
+      {
+        "id": "ADV-055",
+        "category": "schema_boundary",
+        "defended": true,
+        "defense_layer": "Zod originalSchema + JSON.stringify <input_text> encapsulation",
+        "latency_ms": 0.354,
+        "note": "Valid edge string escaped safely inside JSON wrapper"
+      }
+    ]
+  },
+  "experiment_d_authorization_and_workflow": {
+    "total_cases": 38,
+    "passed": 38,
+    "failed": 0,
+    "pass_rate": 1,
+    "mean_latency_ms": 46.921,
+    "p95_latency_ms": 228.819,
+    "cases": [
+      {
+        "id": "AUTH-01",
+        "category": "unauthenticated_rejection",
+        "desc": "GET /api/me without token -> 401",
+        "passed": true,
+        "latency_ms": 322.541,
+        "detail": "PASS"
+      },
+      {
+        "id": "AUTH-02",
+        "category": "unauthenticated_rejection",
+        "desc": "GET /api/site without token -> 401",
+        "passed": true,
+        "latency_ms": 44.324,
+        "detail": "PASS"
+      },
+      {
+        "id": "AUTH-03",
+        "category": "unauthenticated_rejection",
+        "desc": "GET /api/workers without token -> 401",
+        "passed": true,
+        "latency_ms": 30.284,
+        "detail": "PASS"
+      },
+      {
+        "id": "AUTH-04",
+        "category": "unauthenticated_rejection",
+        "desc": "GET /api/tasks without token -> 401",
+        "passed": true,
+        "latency_ms": 31.29,
+        "detail": "PASS"
+      },
+      {
+        "id": "AUTH-05",
+        "category": "unauthenticated_rejection",
+        "desc": "POST /api/tasks without token -> 401",
+        "passed": true,
+        "latency_ms": 228.819,
+        "detail": "PASS"
+      },
+      {
+        "id": "AUTH-06",
+        "category": "unauthenticated_rejection",
+        "desc": "POST /api/tasks/preview without token -> 401",
+        "passed": true,
+        "latency_ms": 32.229,
+        "detail": "PASS"
+      },
+      {
+        "id": "AUTH-07",
+        "category": "unauthenticated_rejection",
+        "desc": "GET /api/incidents without token -> 401",
+        "passed": true,
+        "latency_ms": 28.515,
+        "detail": "PASS"
+      },
+      {
+        "id": "AUTH-08",
+        "category": "unauthenticated_rejection",
+        "desc": "POST /api/incidents without token -> 401",
+        "passed": true,
+        "latency_ms": 28.169,
+        "detail": "PASS"
+      },
+      {
+        "id": "AUTH-09",
+        "category": "unauthenticated_rejection",
+        "desc": "GET /api/wages without token -> 401",
+        "passed": true,
+        "latency_ms": 35.298,
+        "detail": "PASS"
+      },
+      {
+        "id": "AUTH-10",
+        "category": "unauthenticated_rejection",
+        "desc": "POST /api/wages without token -> 401",
+        "passed": true,
+        "latency_ms": 32.238,
+        "detail": "PASS"
+      },
+      {
+        "id": "AUTH-11",
+        "category": "invalid_token_rejection",
+        "desc": "Forged bearer token -> 401",
+        "passed": true,
+        "latency_ms": 28.166,
+        "detail": "PASS"
+      },
+      {
+        "id": "WRK-01",
+        "category": "worker_boundary",
+        "desc": "Worker cannot list site workers -> 403",
+        "passed": true,
+        "latency_ms": 40.74,
+        "detail": "PASS"
+      },
+      {
+        "id": "WRK-02",
+        "category": "worker_boundary",
+        "desc": "Worker cannot preview task -> 403",
+        "passed": true,
+        "latency_ms": 29.329,
+        "detail": "PASS"
+      },
+      {
+        "id": "WRK-03",
+        "category": "worker_boundary",
+        "desc": "Worker cannot create task -> 403",
+        "passed": true,
+        "latency_ms": 36.381,
+        "detail": "PASS"
+      },
+      {
+        "id": "WRK-04",
+        "category": "worker_boundary",
+        "desc": "Worker cannot create wage entry -> 403",
+        "passed": true,
+        "latency_ms": 25.535,
+        "detail": "PASS"
+      },
+      {
+        "id": "WRK-05",
+        "category": "worker_boundary",
+        "desc": "Worker cannot complete task before acknowledging -> 409",
+        "passed": true,
+        "latency_ms": 27.747,
+        "detail": "PASS"
+      },
+      {
+        "id": "WRK-06",
+        "category": "worker_boundary",
+        "desc": "Worker A2 cannot read Worker A assigned task -> 404",
+        "passed": true,
+        "latency_ms": 24.306,
+        "detail": "PASS"
+      },
+      {
+        "id": "WRK-07",
+        "category": "worker_boundary",
+        "desc": "Worker can acknowledge, start, complete own task -> 200",
+        "passed": true,
+        "latency_ms": 73.077,
+        "detail": "PASS"
+      },
+      {
+        "id": "WRK-08",
+        "category": "worker_boundary",
+        "desc": "Worker can submit incident and duplicate requestId is idempotent",
+        "passed": true,
+        "latency_ms": 58.837,
+        "detail": "PASS"
+      },
+      {
+        "id": "CON-01",
+        "category": "contractor_boundary",
+        "desc": "Contractor cannot acknowledge worker task -> 403",
+        "passed": true,
+        "latency_ms": 32.235,
+        "detail": "PASS"
+      },
+      {
+        "id": "CON-02",
+        "category": "contractor_boundary",
+        "desc": "Contractor cannot submit worker incident -> 403",
+        "passed": true,
+        "latency_ms": 27.242,
+        "detail": "PASS"
+      },
+      {
+        "id": "CON-03",
+        "category": "contractor_boundary",
+        "desc": "Contractor cannot trigger hospital acknowledgeDemo -> 403",
+        "passed": true,
+        "latency_ms": 42.306,
+        "detail": "PASS"
+      },
+      {
+        "id": "CON-04",
+        "category": "contractor_boundary",
+        "desc": "Contractor B (different site) isolated from Site A tasks -> 404",
+        "passed": true,
+        "latency_ms": 30.138,
+        "detail": "PASS"
+      },
+      {
+        "id": "CON-05",
+        "category": "contractor_boundary",
+        "desc": "Contractor cannot assign task with modified preview text -> 400",
+        "passed": true,
+        "latency_ms": 33.64,
+        "detail": "PASS"
+      },
+      {
+        "id": "CON-06",
+        "category": "contractor_boundary",
+        "desc": "Contractor can mark incident reviewed -> 200",
+        "passed": true,
+        "latency_ms": 38.201,
+        "detail": "PASS"
+      },
+      {
+        "id": "HSP-01",
+        "category": "hospital_boundary",
+        "desc": "Hospital cannot view tasks -> 403",
+        "passed": true,
+        "latency_ms": 30.079,
+        "detail": "PASS"
+      },
+      {
+        "id": "HSP-02",
+        "category": "hospital_boundary",
+        "desc": "Hospital cannot view wages -> 403",
+        "passed": true,
+        "latency_ms": 28.5,
+        "detail": "PASS"
+      },
+      {
+        "id": "HSP-03",
+        "category": "hospital_boundary",
+        "desc": "Hospital cannot close demo before acknowledging -> 409",
+        "passed": true,
+        "latency_ms": 29.443,
+        "detail": "PASS"
+      },
+      {
+        "id": "HSP-04",
+        "category": "hospital_boundary",
+        "desc": "Hospital B (other site) gets 0 Site A incidents",
+        "passed": true,
+        "latency_ms": 31.822,
+        "detail": "PASS"
+      },
+      {
+        "id": "HSP-05",
+        "category": "hospital_boundary",
+        "desc": "Hospital can advance demo incident lifecycle & isSimulation=true",
+        "passed": true,
+        "latency_ms": 102.605,
+        "detail": "PASS"
+      },
+      {
+        "id": "HSP-06",
+        "category": "hospital_boundary",
+        "desc": "Append-only audit trail persisted across fresh Service reload",
+        "passed": true,
+        "latency_ms": 1.485,
+        "detail": "PASS"
+      },
+      {
+        "id": "VAL-01",
+        "category": "payload_validation",
+        "desc": "Short incident text (<5 chars) rejected -> 400",
+        "passed": true,
+        "latency_ms": 33.643,
+        "detail": "PASS"
+      },
+      {
+        "id": "VAL-02",
+        "category": "payload_validation",
+        "desc": "Partial GPS (latitude without longitude) rejected -> 400",
+        "passed": true,
+        "latency_ms": 29.204,
+        "detail": "PASS"
+      },
+      {
+        "id": "VAL-03",
+        "category": "payload_validation",
+        "desc": "Out-of-bounds latitude (95) rejected -> 400",
+        "passed": true,
+        "latency_ms": 28.088,
+        "detail": "PASS"
+      },
+      {
+        "id": "VAL-04",
+        "category": "payload_validation",
+        "desc": "Invalid category enum rejected -> 400",
+        "passed": true,
+        "latency_ms": 40.586,
+        "detail": "PASS"
+      },
+      {
+        "id": "VAL-05",
+        "category": "payload_validation",
+        "desc": "Negative wage dailyRate rejected -> 400",
+        "passed": true,
+        "latency_ms": 33.173,
+        "detail": "PASS"
+      },
+      {
+        "id": "VAL-06",
+        "category": "payload_validation",
+        "desc": "Deductions > 0 without deductionReason rejected -> 400",
+        "passed": true,
+        "latency_ms": 25.559,
+        "detail": "PASS"
+      },
+      {
+        "id": "VAL-07",
+        "category": "persistence_bocw",
+        "desc": "BOCW 2x overtime wage calculation & dispute persisted across reload",
+        "passed": true,
+        "latency_ms": 7.222,
+        "detail": "PASS"
+      }
+    ]
+  }
+}
