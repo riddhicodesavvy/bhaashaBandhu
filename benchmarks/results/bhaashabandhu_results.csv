@@ -1,0 +1,5 @@
+experiment,category,total_cases,passed_or_defended,rate,mean_latency_ms,status
+D_auth_workflow,all,38,38,1,46.921,COMPLETE
+C_injection_boundary,all_deterministic_mock,55,54,0.9818,0,COMPLETE_LOCAL_ONLY
+A_translation,all_90_cases,90,0,NA,NA,BLOCKED_REQUIRES_PAID_API_APPROVAL_AND_HUMAN_VALIDATION
+B_speech_recognition,audio_fixtures,7,0,NA,NA,BLOCKED_MISSING_VERIFIED_TRANSCRIPTS_AND_API_APPROVAL

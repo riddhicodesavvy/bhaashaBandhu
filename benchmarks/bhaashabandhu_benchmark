@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+exec npx tsx "$(dirname "$0")/bhaashabandhu_benchmark.ts" "$@"
+
